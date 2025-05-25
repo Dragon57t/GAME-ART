@@ -16,21 +16,21 @@ io.on("connection", (socket) => {
 
   socket.on("findOpponent", () => {
     if (waitingPlayer) {
-      const playerA = waitingPlayer;
-      const playerB = socket;
+      const player1 = waitingPlayer;
+      const player2 = socket;
 
-      playerA.emit("startDrawing");
-      playerB.emit("startDrawing");
+      player1.emit("startGame");
+      player2.emit("startGame");
 
-      playerA.opponent = playerB;
-      playerB.opponent = playerA;
+      player1.opponent = player2;
+      player2.opponent = player1;
 
       waitingPlayer = null;
-
-      console.log("بدأت جلسة رسم بين", playerA.id, "و", playerB.id);
+      console.log("بدأت جلسة رسم جماعي بين", player1.id, "و", player2.id);
     } else {
       waitingPlayer = socket;
       socket.emit("waiting");
+      console.log("لاعب ينتظر خصم:", socket.id);
     }
   });
 
@@ -40,20 +40,21 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("clearCanvas", () => {
-    if (socket.opponent) {
-      socket.opponent.emit("clearCanvas");
-    }
-  });
-
   socket.on("disconnect", () => {
     console.log("لاعب خرج:", socket.id);
-    if (waitingPlayer === socket) waitingPlayer = null;
-    if (socket.opponent) socket.opponent.emit("opponentLeft");
+
+    if (waitingPlayer === socket) {
+      waitingPlayer = null;
+    }
+
+    if (socket.opponent) {
+      socket.opponent.emit("opponentLeft");
+      socket.opponent.opponent = null;
+    }
   });
 });
 
 const PORT = process.env.PORT || 10000;
 server.listen(PORT, "0.0.0.0", () => {
-  console.log(`السيرفر يعمل على المنفذ ${PORT}`);
+  console.log(`الخادم يعمل على المنفذ ${PORT}`);
 });
