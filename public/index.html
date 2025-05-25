@@ -89,12 +89,21 @@
     function startDraw(e) {
       if (!opponentConnected) return;
       drawing = true;
-      draw(e);
+      const { x, y } = getCoords(e);
+      const color = currentTool === "draw" ? colorPicker.value : "#ffffff";
+      const size = brushSize.value;
+
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+
+      socket.emit("start", { x, y });
     }
 
     function endDraw() {
+      if (!drawing) return;
       drawing = false;
       ctx.beginPath();
+      socket.emit("end");
     }
 
     function draw(e) {
@@ -107,24 +116,28 @@
       ctx.lineWidth = size;
       ctx.lineCap = "round";
       ctx.strokeStyle = color;
-
       ctx.lineTo(x, y);
       ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(x, y);
 
       socket.emit("draw", { x, y, color, size });
     }
+
+    // استقبال الرسم من الخصم
+    socket.on("start", ({ x, y }) => {
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+    });
 
     socket.on("draw", ({ x, y, color, size }) => {
       ctx.lineWidth = size;
       ctx.lineCap = "round";
       ctx.strokeStyle = color;
-
       ctx.lineTo(x, y);
       ctx.stroke();
+    });
+
+    socket.on("end", () => {
       ctx.beginPath();
-      ctx.moveTo(x, y);
     });
 
     function setEraser() {
