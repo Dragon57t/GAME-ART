@@ -1,91 +1,144 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>رسم جماعي</title>
   <style>
-    body { margin: 0; font-family: sans-serif; text-align: center; background: #f0f0f0; }
-    canvas { border: 2px solid #333; background: #fff; touch-action: none; }
-    button { margin-top: 10px; padding: 10px 20px; font-size: 18px; }
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #f0f0f0;
+    }
+    #toolbar {
+      margin: 10px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    canvas {
+      border: 2px solid #000;
+      background: #fff;
+      touch-action: none;
+    }
+    button, input[type="color"], input[type="range"] {
+      padding: 5px;
+      font-size: 16px;
+    }
   </style>
 </head>
 <body>
   <h2>تطبيق رسم جماعي</h2>
-  <canvas id="canvas" width="400" height="400"></canvas>
-  <br>
-  <button id="find">بحث عن لاعب</button>
+  <div id="toolbar">
+    <button onclick="findOpponent()">بحث عن لاعب</button>
+    <input type="color" id="colorPicker" value="#000000">
+    <input type="range" id="brushSize" min="1" max="20" value="4">
+    <button onclick="setEraser()">ممحاة</button>
+    <button onclick="clearCanvas()">مسح</button>
+  </div>
+  <canvas id="board" width="500" height="500"></canvas>
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
+    const canvas = document.getElementById("board");
+    const ctx = canvas.getContext("2d");
+    const colorPicker = document.getElementById("colorPicker");
+    const brushSize = document.getElementById("brushSize");
+
     const socket = io();
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    const findBtn = document.getElementById('find');
+    let drawing = false;
+    let opponentConnected = false;
+    let currentTool = "draw";
 
-    let painting = false;
-    let canDraw = false;
-
-    // بحث عن لاعب
-    findBtn.onclick = () => {
-      socket.emit('findOpponent');
-      findBtn.disabled = true;
-      findBtn.textContent = "جاري البحث...";
-    };
-
-    // بداية اللعب
-    socket.on('startGame', () => {
-      canDraw = true;
-      findBtn.textContent = "تم الاتصال، يمكنك الرسم!";
-    });
-
-    // الانتظار
-    socket.on('waiting', () => {
-      findBtn.textContent = "في الانتظار...";
-    });
-
-    // خصم خرج
-    socket.on('opponentLeft', () => {
-      canDraw = false;
-      findBtn.disabled = false;
-      findBtn.textContent = "الخصم خرج، ابحث مجددًا";
-    });
-
-    // إرسال حركة الرسم
-    function draw(x, y, type) {
-      if (!canDraw) return;
-
-      ctx.lineWidth = 2;
-      ctx.lineCap = "round";
-      ctx.strokeStyle = "#000";
-
-      if (type === 'start') {
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-      } else if (type === 'draw') {
-        ctx.lineTo(x, y);
-        ctx.stroke();
-      }
-
-      socket.emit('draw', { x, y, type });
+    function findOpponent() {
+      socket.emit("findOpponent");
+      alert("جاري البحث عن لاعب...");
     }
 
-    // استقبال حركة خصم
-    socket.on('draw', ({ x, y, type }) => {
-      draw(x, y, type);
+    socket.on("startGame", () => {
+      alert("تم العثور على خصم! يمكنك البدء بالرسم.");
+      opponentConnected = true;
     });
 
-    // التحكم بالرسم
-    canvas.addEventListener('mousedown', e => {
-      painting = true;
-      draw(e.offsetX, e.offsetY, 'start');
+    socket.on("waiting", () => {
+      alert("في الانتظار حتى ينضم خصم...");
     });
 
-    canvas.addEventListener('mousemove', e => {
-      if (painting) draw(e.offsetX, e.offsetY, 'draw');
+    canvas.addEventListener("mousedown", startDraw);
+    canvas.addEventListener("mouseup", endDraw);
+    canvas.addEventListener("mousemove", draw);
+
+    canvas.addEventListener("touchstart", (e) => startDraw(e.touches[0]));
+    canvas.addEventListener("touchend", endDraw);
+    canvas.addEventListener("touchmove", (e) => {
+      draw(e.touches[0]);
+      e.preventDefault();
+    }, { passive: false });
+
+    function getCoords(e) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      };
+    }
+
+    function startDraw(e) {
+      if (!opponentConnected) return;
+      drawing = true;
+      draw(e);
+    }
+
+    function endDraw() {
+      drawing = false;
+      ctx.beginPath();
+    }
+
+    function draw(e) {
+      if (!drawing || !opponentConnected) return;
+
+      const { x, y } = getCoords(e);
+      const color = currentTool === "draw" ? colorPicker.value : "#ffffff";
+      const size = brushSize.value;
+
+      ctx.lineWidth = size;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = color;
+
+      ctx.lineTo(x, y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+
+      socket.emit("draw", { x, y, color, size });
+    }
+
+    socket.on("draw", ({ x, y, color, size }) => {
+      ctx.lineWidth = size;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = color;
+
+      ctx.lineTo(x, y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x, y);
     });
 
-    canvas.addEventListener('mouseup', () => painting = false);
-    canvas.addEventListener('mouseleave', () => painting = false);
+    function setEraser() {
+      currentTool = currentTool === "draw" ? "erase" : "draw";
+    }
+
+    function clearCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      socket.emit("clear");
+    }
+
+    socket.on("clear", () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
   </script>
 </body>
 </html>
