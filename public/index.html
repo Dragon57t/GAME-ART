@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>رسم جماعي</title>
+  <style>
+    body { margin: 0; font-family: sans-serif; text-align: center; background: #f4f4f4; }
+    #canvas { border: 2px solid #000; background: #fff; touch-action: none; }
+    #controls { margin-top: 10px; }
+    button, input[type=color] { margin: 5px; padding: 10px; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <h1>تطبيق رسم جماعي</h1>
+  <button id="find">بحث عن لاعب</button>
+  <p id="status">اضغط على "بحث عن لاعب"</p>
+  <canvas id="canvas" width="400" height="400"></canvas>
+  <div id="controls">
+    <input type="color" id="colorPicker" />
+    <button id="eraser">ممحاة</button>
+    <button id="clear">مسح</button>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const colorPicker = document.getElementById("colorPicker");
+    const eraser = document.getElementById("eraser");
+    const clear = document.getElementById("clear");
+    const find = document.getElementById("find");
+    const status = document.getElementById("status");
+
+    let drawing = false;
+    let currentColor = "#000";
+
+    find.onclick = () => {
+      socket.emit("findOpponent");
+      status.textContent = "جاري البحث عن لاعب...";
+    };
+
+    socket.on("waiting", () => {
+      status.textContent = "بانتظار خصم...";
+    });
+
+    socket.on("startDrawing", () => {
+      status.textContent = "بدأت جلسة الرسم!";
+    });
+
+    socket.on("opponentLeft", () => {
+      status.textContent = "الخصم خرج، اضغط بحث مرة أخرى.";
+    });
+
+    socket.on("draw", (data) => {
+      ctx.strokeStyle = data.color;
+      ctx.beginPath();
+      ctx.moveTo(data.prevX, data.prevY);
+      ctx.lineTo(data.x, data.y);
+      ctx.stroke();
+    });
+
+    socket.on("clearCanvas", () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+
+    colorPicker.oninput = () => currentColor = colorPicker.value;
+    eraser.onclick = () => currentColor = "#fff";
+    clear.onclick = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      socket.emit("clearCanvas");
+    };
+
+    let prevX = 0, prevY = 0;
+
+    canvas.addEventListener("mousedown", (e) => {
+      drawing = true;
+      [prevX, prevY] = [e.offsetX, e.offsetY];
+    });
+
+    canvas.addEventListener("mouseup", () => drawing = false);
+    canvas.addEventListener("mousemove", (e) => {
+      if (!drawing) return;
+      const x = e.offsetX;
+      const y = e.offsetY;
+      ctx.strokeStyle = currentColor;
+      ctx.beginPath();
+      ctx.moveTo(prevX, prevY);
+      ctx.lineTo(x, y);
+      ctx.stroke();
+      socket.emit("draw", { x, y, prevX, prevY, color: currentColor });
+      [prevX, prevY] = [x, y];
+    });
+  </script>
+</body>
+</html>
