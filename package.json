@@ -1,7 +1,7 @@
 {
-  "name": "collaborative-drawing-app",
+  "name": "simple-drawing-app",
   "version": "1.0.0",
-  "description": "تطبيق رسم جماعي مع إمكانية البحث عن لاعبين والرسم في نفس اللوحة",
+  "description": "تطبيق رسم جماعي بسيط",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -13,9 +13,6 @@
   "dependencies": {
     "express": "^4.18.2",
     "socket.io": "^4.7.2"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.1"
   },
   "keywords": [
     "drawing",
