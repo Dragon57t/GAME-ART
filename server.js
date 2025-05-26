@@ -1,123 +1,219 @@
-
 const express = require('express');
 const http = require('http');
-const socketIO = require('socket.io');
+const socketIo = require('socket.io');
 const path = require('path');
 
-// Create Express app
+// Initialize Express app
 const app = express();
 const server = http.createServer(app);
-const io = socketIO(server);
+const io = socketIo(server);
 
 // Serve static files
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname)));
 
-// Available rooms and waiting players
-let waitingPlayers = [];
-let rooms = {};
+// Serve index.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Game variables
+const waitingPlayers = [];
+const activeRooms = {};
+const canvasStates = {};
 
 // Socket.IO connection handling
 io.on('connection', (socket) => {
-    console.log('New user connected:', socket.id);
+  console.log(`Player connected: ${socket.id}`);
 
-    // Handle user searching for a match
-    socket.on('findMatch', (userData) => {
-        console.log(`${socket.id} is searching for a match`);
-
-        // If user was already waiting, remove from waiting list
-        waitingPlayers = waitingPlayers.filter(player => player.id !== socket.id);
-
-        // Check if there are waiting players
-        if (waitingPlayers.length > 0) {
-            // Match with the first waiting player
-            const opponent = waitingPlayers.shift();
-            const roomId = `${socket.id}-${opponent.id}`;
-
-            // Create a new room
-            rooms[roomId] = {
-                players: [socket.id, opponent.id],
-                drawData: []
-            };
-
-            // Join both players to the room
-            socket.join(roomId);
-            io.sockets.sockets.get(opponent.id)?.join(roomId);
-
-            // Notify both players about the match
-            io.to(roomId).emit('matchFound', { roomId });
-            console.log(`Match found: ${socket.id} and ${opponent.id} in room ${roomId}`);
-        } else {
-            // Add to waiting list
-            waitingPlayers.push({
-                id: socket.id,
-                userData: userData || {}
-            });
-            socket.emit('waiting');
-            console.log(`${socket.id} added to waiting list`);
-        }
-    });
-
-    // Handle drawing data
-    socket.on('draw', (data) => {
-        const roomId = findRoomByPlayerId(socket.id);
-        if (roomId) {
-            // Store draw data for reconnection scenarios
-            rooms[roomId].drawData.push(data);
-
-            // Broadcast drawing data to the other player in the room
-            socket.to(roomId).emit('draw', data);
-        }
-    });
-
-    // Handle clear canvas
-    socket.on('clearCanvas', () => {
-        const roomId = findRoomByPlayerId(socket.id);
-        if (roomId) {
-            rooms[roomId].drawData = [];
-            socket.to(roomId).emit('clearCanvas');
-        }
-    });
-
-    // Handle disconnection
-    socket.on('disconnect', () => {
-        console.log('User disconnected:', socket.id);
-
-        // Remove from waiting list if they were waiting
-        waitingPlayers = waitingPlayers.filter(player => player.id !== socket.id);
-
-        // Notify opponent if they were in a room
-        const roomId = findRoomByPlayerId(socket.id);
-        if (roomId) {
-            socket.to(roomId).emit('opponentLeft');
-            delete rooms[roomId];
-        }
-    });
-
-    // Cancel search
-    socket.on('cancelSearch', () => {
-        waitingPlayers = waitingPlayers.filter(player => player.id !== socket.id);
-        socket.emit('searchCancelled');
-        console.log(`${socket.id} cancelled their search`);
-    });
-});
-
-// Helper function to find room by player ID
-function findRoomByPlayerId(playerId) {
-    for (const roomId in rooms) {
-        if (rooms[roomId].players.includes(playerId)) {
-            return roomId;
-        }
+  // Find player
+  socket.on('find_player', (data) => {
+    console.log(`Player ${socket.id} is looking for a game`);
+    
+    // Store user data with the socket
+    socket.userData = data.userData || { username: 'زائر' };
+    
+    // Check if player is already in waiting list
+    if (waitingPlayers.includes(socket.id)) {
+      return;
     }
-    return null;
-}
-
-// Define routes
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    
+    // Check if there's another player waiting
+    if (waitingPlayers.length > 0) {
+      const opponentId = waitingPlayers.shift();
+      const opponentSocket = io.sockets.sockets.get(opponentId);
+      const roomId = `room_${Date.now()}`;
+      
+      // Create a new room
+      activeRooms[roomId] = {
+        players: [
+          { id: opponentId, userData: opponentSocket.userData },
+          { id: socket.id, userData: socket.userData }
+        ],
+        active: true
+      };
+      
+      // Join both players to the room
+      socket.join(roomId);
+      opponentSocket.join(roomId);
+      
+      // Initialize canvas state for the room
+      canvasStates[roomId] = null;
+      
+      // Notify players that game has started
+      io.to(opponentId).emit('game_start', { 
+        roomId, 
+        playerNumber: 1,
+        players: activeRooms[roomId].players
+      });
+      
+      socket.emit('game_start', { 
+        roomId, 
+        playerNumber: 2,
+        players: activeRooms[roomId].players
+      });
+      
+      console.log(`Game started in room ${roomId} between ${opponentId} and ${socket.id}`);
+    } else {
+      // Add player to waiting list
+      waitingPlayers.push(socket.id);
+      console.log(`Player ${socket.id} added to waiting list`);
+    }
+  });
+  
+  // Cancel search
+  socket.on('cancel_search', () => {
+    const index = waitingPlayers.indexOf(socket.id);
+    if (index !== -1) {
+      waitingPlayers.splice(index, 1);
+      console.log(`Player ${socket.id} canceled search`);
+    }
+  });
+  
+  // Leave game
+  socket.on('leave_game', (data) => {
+    const { roomId } = data;
+    
+    if (roomId && activeRooms[roomId]) {
+      // Notify other player
+      socket.to(roomId).emit('player_left');
+      
+      // Remove room
+      delete activeRooms[roomId];
+      delete canvasStates[roomId];
+      console.log(`Player ${socket.id} left room ${roomId}`);
+    }
+  });
+  
+  // Drawing events
+  socket.on('draw_start', (data) => {
+    const { roomId, x, y, color, size, opacity, tool, userData } = data;
+    if (roomId && activeRooms[roomId]) {
+      socket.to(roomId).emit('draw_start', { x, y, color, size, opacity, tool, userData });
+    }
+  });
+  
+  socket.on('draw_move', (data) => {
+    const { roomId, x0, y0, x1, y1, color, size, opacity, tool } = data;
+    if (roomId && activeRooms[roomId]) {
+      socket.to(roomId).emit('draw_move', { x0, y0, x1, y1, color, size, opacity, tool });
+    }
+  });
+  
+  socket.on('draw_end', (data) => {
+    const { roomId } = data;
+    if (roomId && activeRooms[roomId]) {
+      socket.to(roomId).emit('draw_end');
+    }
+  });
+  
+  socket.on('draw_shape', (data) => {
+    const { roomId, startX, startY, endX, endY, color, size, opacity, tool } = data;
+    if (roomId && activeRooms[roomId]) {
+      socket.to(roomId).emit('draw_shape', { startX, startY, endX, endY, color, size, opacity, tool });
+    }
+  });
+  
+  socket.on('draw_text', (data) => {
+    const { roomId, x, y, text, color, size, opacity } = data;
+    if (roomId && activeRooms[roomId]) {
+      socket.to(roomId).emit('draw_text', { x, y, text, color, size, opacity });
+    }
+  });
+  
+  socket.on('draw_fill', (data) => {
+    const { roomId, x, y, color } = data;
+    if (roomId && activeRooms[roomId]) {
+      socket.to(roomId).emit('draw_fill', { x, y, color });
+    }
+  });
+  
+  socket.on('clear_canvas', (data) => {
+    const { roomId } = data;
+    if (roomId && activeRooms[roomId]) {
+      socket.to(roomId).emit('clear_canvas');
+      // Update canvas state
+      canvasStates[roomId] = null;
+    }
+  });
+  
+  // Canvas state management for undo/redo
+  socket.on('canvas_state_change', (data) => {
+    const { roomId, dataUrl } = data;
+    if (roomId && activeRooms[roomId]) {
+      // Update stored canvas state
+      canvasStates[roomId] = dataUrl;
+      // Broadcast to other players
+      socket.to(roomId).emit('canvas_state_change', { dataUrl });
+    }
+  });
+  
+  // Request current canvas state
+  socket.on('request_canvas_state', (data) => {
+    const { roomId } = data;
+    if (roomId && activeRooms[roomId] && canvasStates[roomId]) {
+      socket.emit('canvas_state_update', { dataUrl: canvasStates[roomId] });
+    }
+  });
+  
+  // Update canvas state
+  socket.on('canvas_state_update', (data) => {
+    const { roomId, dataUrl } = data;
+    if (roomId && activeRooms[roomId]) {
+      canvasStates[roomId] = dataUrl;
+    }
+  });
+  
+  // Disconnect
+  socket.on('disconnect', () => {
+    console.log(`Player disconnected: ${socket.id}`);
+    
+    // Remove from waiting list if present
+    const waitingIndex = waitingPlayers.indexOf(socket.id);
+    if (waitingIndex !== -1) {
+      waitingPlayers.splice(waitingIndex, 1);
+    }
+    
+    // Check if player is in an active room
+    for (const roomId in activeRooms) {
+      const room = activeRooms[roomId];
+      const playerIndex = room.players.findIndex(p => p.id === socket.id);
+      
+      if (playerIndex !== -1) {
+        // Notify other player
+        socket.to(roomId).emit('player_left');
+        
+        // Remove room
+        delete activeRooms[roomId];
+        delete canvasStates[roomId];
+        console.log(`Room ${roomId} closed due to player ${socket.id} disconnection`);
+        break;
+      }
+    }
+  });
 });
 
-// Start the server
+// Start server
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on http://0.0.0.0:${PORT}`);
 });
