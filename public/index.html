@@ -4,298 +4,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تطبيق الرسم الجماعي</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary-color: #6366f1;
-            --primary-hover: #4f46e5;
-            --secondary-color: #ec4899;
-            --secondary-hover: #db2777;
-            --dark-color: #1e293b;
-            --light-color: #f8fafc;
-            --success-color: #10b981;
-            --danger-color: #ef4444;
-            --warning-color: #f59e0b;
-            --info-color: #3b82f6;
-            --gray-color: #94a3b8;
-            --border-radius: 8px;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --transition: all 0.3s ease;
-        }
-        
-        * {
-            box-sizing: border-box;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-        }
-        
-        body {
-            font-family: 'Tajawal', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f0f9ff 0%, #e6f7ff 100%);
-            min-height: 100vh;
-            color: var(--dark-color);
-            line-height: 1.6;
-        }
-        
-        .app-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .logo h1 {
-            font-size: 1.8rem;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin: 0;
-        }
-        
-        .logo-icon {
-            font-size: 2rem;
-            color: var(--primary-color);
-        }
-        
-        .user-section {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--gray-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            overflow: hidden;
-        }
-        
-        .user-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .user-name {
-            font-weight: bold;
-        }
-        
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 4fr;
-            gap: 20px;
-        }
-        
-        .sidebar {
-            background-color: white;
-            border-radius: var(--border-radius);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            height: fit-content;
-        }
-        
-        .tools-section {
-            margin-bottom: 25px;
-        }
-        
-        .section-title {
-            font-size: 1.1rem;
-            margin-bottom: 15px;
-            color: var(--dark-color);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .section-title i {
-            color: var(--primary-color);
-        }
-        
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-        
-        .tool-btn {
+            background-color: #f0f8ff;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 10px;
-            border-radius: var(--border-radius);
-            background-color: var(--light-color);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            transition: var(--transition);
         }
-        
-        .tool-btn:hover {
-            background-color: rgba(99, 102, 241, 0.1);
-        }
-        
-        .tool-btn.active {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        
-        .tool-btn i {
-            font-size: 1.2rem;
-            margin-bottom: 5px;
-        }
-        
-        .color-picker {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .color {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: transform 0.2s;
-        }
-        
-        .color:hover {
-            transform: scale(1.2);
-        }
-        
-        .color.active {
-            border: 2px solid var(--dark-color);
-            box-shadow: 0 0 0 2px white;
-        }
-        
-        .brush-size {
-            margin-bottom: 20px;
-        }
-        
-        .brush-size-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-        
-        .brush-size input {
+        .container {
             width: 100%;
-            -webkit-appearance: none;
-            height: 6px;
-            border-radius: 5px;
-            background: #d7dcdf;
-            outline: none;
+            max-width: 1000px;
+            margin: 20px auto;
+            text-align: center;
         }
-        
-        .brush-size input::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            cursor: pointer;
-        }
-        
-        .brush-size input::-moz-range-thumb {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            cursor: pointer;
-            border: none;
-        }
-        
-        .opacity-control {
+        h1 {
+            color: #2c3e50;
             margin-bottom: 20px;
         }
-        
         .game-controls {
+            margin-bottom: 20px;
             display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .btn {
-            padding: 10px 15px;
-            border-radius: var(--border-radius);
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
+            flex-wrap: wrap;
         }
-        
+        .btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
         .btn-primary {
-            background-color: var(--primary-color);
+            background-color: #3498db;
             color: white;
         }
-        
         .btn-primary:hover {
-            background-color: var(--primary-hover);
+            background-color: #2980b9;
         }
-        
         .btn-danger {
-            background-color: var(--danger-color);
+            background-color: #e74c3c;
             color: white;
         }
-        
         .btn-danger:hover {
-            background-color: #b91c1c;
+            background-color: #c0392b;
         }
-        
-        .btn-success {
-            background-color: var(--success-color);
-            color: white;
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #ecf0f1;
         }
-        
-        .btn-success:hover {
-            background-color: #059669;
-        }
-        
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        
-        .canvas-section {
-            position: relative;
-        }
-        
         .canvas-container {
             position: relative;
             width: 100%;
-            height: 600px;
-            border-radius: var(--border-radius);
+            max-width: 800px;
+            height: 500px;
+            border: 2px solid #3498db;
+            border-radius: 5px;
             background-color: white;
-            box-shadow: var(--shadow);
+            margin: 0 auto;
             overflow: hidden;
         }
-        
         #drawingCanvas {
             position: absolute;
             top: 0;
@@ -304,217 +79,36 @@
             height: 100%;
             cursor: crosshair;
         }
-        
-        .canvas-actions {
+        .color-picker {
             display: flex;
-            justify-content: space-between;
-            margin-top: 15px;
-        }
-        
-        .action-buttons {
-            display: flex;
+            justify-content: center;
             gap: 10px;
+            margin: 15px 0;
         }
-        
-        .status-bar {
-            background-color: white;
-            padding: 10px 15px;
-            border-radius: var(--border-radius);
-            margin-top: 15px;
-            box-shadow: var(--shadow);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: var(--danger-color);
-        }
-        
-        .status-dot.connected {
-            background-color: var(--success-color);
-        }
-        
-        .player-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .player-avatar {
+        .color {
             width: 30px;
             height: 30px;
             border-radius: 50%;
-            background-color: var(--gray-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 0.8rem;
-            overflow: hidden;
-        }
-        
-        .player-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        /* Modal styles */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: var(--transition);
-        }
-        
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        .modal {
-            background-color: white;
-            border-radius: var(--border-radius);
-            padding: 30px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: var(--shadow);
-            transform: translateY(-20px);
-            transition: var(--transition);
-        }
-        
-        .modal-overlay.active .modal {
-            transform: translateY(0);
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .modal-title {
-            font-size: 1.5rem;
-            color: var(--dark-color);
-        }
-        
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
             cursor: pointer;
-            color: var(--gray-color);
-            transition: var(--transition);
+            border: 2px solid transparent;
+            transition: transform 0.2s;
         }
-        
-        .modal-close:hover {
-            color: var(--danger-color);
+        .color:hover {
+            transform: scale(1.2);
         }
-        
-        .modal-body {
-            margin-bottom: 20px;
+        .color.active {
+            border: 2px solid #2c3e50;
         }
-        
-        .form-group {
-            margin-bottom: 20px;
+        .brush-size {
+            margin: 10px 0;
         }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 10px 15px;
-            border: 1px solid var(--gray-color);
-            border-radius: var(--border-radius);
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-        
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
-        }
-        
-        .avatar-upload {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .avatar-preview {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background-color: var(--gray-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 2rem;
-            overflow: hidden;
-        }
-        
-        .avatar-preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .file-input-wrapper {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-        }
-        
-        .file-input-wrapper input[type=file] {
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
-        
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-        
         .waiting-screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.7);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -523,359 +117,96 @@
             z-index: 100;
             display: none;
         }
-        
         .spinner {
-            width: 60px;
-            height: 60px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
             border-radius: 50%;
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-top: 4px solid var(--primary-color);
+            width: 50px;
+            height: 50px;
             animation: spin 1s linear infinite;
             margin-bottom: 20px;
         }
-        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        
-        .waiting-text {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-        }
-        
-        .waiting-subtext {
-            font-size: 1rem;
-            margin-bottom: 20px;
-            color: rgba(255, 255, 255, 0.7);
-        }
-        
-        /* Responsive styles */
-        @media (max-width: 992px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .sidebar {
-                order: 2;
-            }
-            
-            .canvas-section {
-                order: 1;
-                margin-bottom: 20px;
-            }
-            
-            .tools-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            
-            .color-picker {
-                grid-template-columns: repeat(6, 1fr);
-            }
-            
-            .game-controls {
-                flex-direction: row;
-                flex-wrap: wrap;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                gap: 15px;
-                align-items: flex-start;
-            }
-            
-            .user-section {
-                align-self: flex-end;
-            }
-            
-            .canvas-container {
-                height: 400px;
-            }
-            
-            .tools-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-        
-        @media (max-width: 576px) {
-            .tools-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .color-picker {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            
-            .canvas-actions {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .action-buttons {
-                width: 100%;
-                justify-content: space-between;
-            }
-            
-            .status-bar {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-        }
-        
-        /* Animation */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        
-        /* Toast notification */
-        .toast-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-        }
-        
-        .toast {
-            background-color: white;
-            color: var(--dark-color);
-            padding: 15px 20px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            margin-top: 10px;
+        .tools {
             display: flex;
-            align-items: center;
+            justify-content: center;
             gap: 10px;
-            transform: translateX(120%);
-            transition: transform 0.3s ease;
+            margin: 10px 0;
         }
-        
-        .toast.show {
-            transform: translateX(0);
+        .tool {
+            padding: 5px 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 3px;
+            cursor: pointer;
+            background-color: white;
         }
-        
-        .toast-icon {
-            font-size: 1.2rem;
+        .tool.active {
+            background-color: #3498db;
+            color: white;
         }
-        
-        .toast-success .toast-icon {
-            color: var(--success-color);
-        }
-        
-        .toast-error .toast-icon {
-            color: var(--danger-color);
-        }
-        
-        .toast-info .toast-icon {
-            color: var(--info-color);
-        }
-        
-        .toast-warning .toast-icon {
-            color: var(--warning-color);
+        @media (max-width: 768px) {
+            .canvas-container {
+                height: 350px;
+            }
+            .game-controls {
+                flex-direction: column;
+                align-items: center;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Login Modal -->
-    <div class="modal-overlay" id="loginModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h2 class="modal-title">تسجيل الدخول</h2>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label for="username" class="form-label">اسم المستخدم</label>
-                        <input type="text" id="username" class="form-input" placeholder="أدخل اسم المستخدم" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">الصورة الشخصية</label>
-                        <div class="avatar-upload">
-                            <div class="avatar-preview" id="avatarPreview">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <div class="file-input-wrapper">
-                                <button class="btn btn-primary" type="button">
-                                    <i class="fas fa-upload"></i> اختر صورة
-                                </button>
-                                <input type="file" id="avatarUpload" accept="image/*">
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" id="loginSubmit">
-                    <i class="fas fa-sign-in-alt"></i> دخول
-                </button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Main App Container -->
-    <div class="app-container">
-        <!-- Header -->
-        <header class="header">
-            <div class="logo">
-                <i class="fas fa-paint-brush logo-icon"></i>
-                <h1>تطبيق الرسم الجماعي</h1>
-            </div>
-            <div class="user-section">
-                <div class="user-avatar" id="userAvatar">
-                    <i class="fas fa-user"></i>
-                </div>
-                <span class="user-name" id="userName">زائر</span>
-            </div>
-        </header>
+    <div class="container">
+        <h1>تطبيق الرسم الجماعي</h1>
         
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Sidebar with Tools -->
-            <div class="sidebar">
-                <div class="tools-section">
-                    <h3 class="section-title"><i class="fas fa-pencil-alt"></i> أدوات الرسم</h3>
-                    <div class="tools-grid">
-                        <div class="tool-btn active" data-tool="brush">
-                            <i class="fas fa-paint-brush"></i>
-                            <span>فرشاة</span>
-                        </div>
-                        <div class="tool-btn" data-tool="eraser">
-                            <i class="fas fa-eraser"></i>
-                            <span>ممحاة</span>
-                        </div>
-                        <div class="tool-btn" data-tool="line">
-                            <i class="fas fa-slash"></i>
-                            <span>خط</span>
-                        </div>
-                        <div class="tool-btn" data-tool="rectangle">
-                            <i class="far fa-square"></i>
-                            <span>مستطيل</span>
-                        </div>
-                        <div class="tool-btn" data-tool="circle">
-                            <i class="far fa-circle"></i>
-                            <span>دائرة</span>
-                        </div>
-                        <div class="tool-btn" data-tool="text">
-                            <i class="fas fa-font"></i>
-                            <span>نص</span>
-                        </div>
-                        <div class="tool-btn" data-tool="fill">
-                            <i class="fas fa-fill-drip"></i>
-                            <span>تعبئة</span>
-                        </div>
-                        <div class="tool-btn" data-tool="eyedropper">
-                            <i class="fas fa-eye-dropper"></i>
-                            <span>قطارة</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="tools-section">
-                    <h3 class="section-title"><i class="fas fa-palette"></i> الألوان</h3>
-                    <div class="color-picker">
-                        <div class="color active" style="background-color: #000000;" data-color="#000000"></div>
-                        <div class="color" style="background-color: #ffffff;" data-color="#ffffff"></div>
-                        <div class="color" style="background-color: #e74c3c;" data-color="#e74c3c"></div>
-                        <div class="color" style="background-color: #e67e22;" data-color="#e67e22"></div>
-                        <div class="color" style="background-color: #f1c40f;" data-color="#f1c40f"></div>
-                        <div class="color" style="background-color: #2ecc71;" data-color="#2ecc71"></div>
-                        <div class="color" style="background-color: #1abc9c;" data-color="#1abc9c"></div>
-                        <div class="color" style="background-color: #3498db;" data-color="#3498db"></div>
-                        <div class="color" style="background-color: #9b59b6;" data-color="#9b59b6"></div>
-                        <div class="color" style="background-color: #34495e;" data-color="#34495e"></div>
-                        <div class="color" style="background-color: #95a5a6;" data-color="#95a5a6"></div>
-                        <div class="color" style="background-color: #ecf0f1;" data-color="#ecf0f1"></div>
-                    </div>
-                </div>
-                
-                <div class="tools-section">
-                    <h3 class="section-title"><i class="fas fa-sliders-h"></i> الإعدادات</h3>
-                    <div class="brush-size">
-                        <div class="brush-size-label">
-                            <label for="brushSize">حجم الفرشاة:</label>
-                            <span id="brushSizeValue">5</span>
-                        </div>
-                        <input type="range" id="brushSize" min="1" max="50" value="5">
-                    </div>
-                    
-                    <div class="opacity-control">
-                        <div class="brush-size-label">
-                            <label for="opacityControl">الشفافية:</label>
-                            <span id="opacityValue">100%</span>
-                        </div>
-                        <input type="range" id="opacityControl" min="1" max="100" value="100">
-                    </div>
-                </div>
-                
-                <div class="tools-section">
-                    <h3 class="section-title"><i class="fas fa-gamepad"></i> التحكم</h3>
-                    <div class="game-controls">
-                        <button id="findPlayerBtn" class="btn btn-primary">
-                            <i class="fas fa-search"></i> البحث عن لاعب
-                        </button>
-                        <button id="clearBtn" class="btn btn-danger">
-                            <i class="fas fa-trash-alt"></i> مسح اللوحة
-                        </button>
-                        <button id="leaveBtn" class="btn btn-danger" disabled>
-                            <i class="fas fa-sign-out-alt"></i> مغادرة اللعبة
-                        </button>
-                        <button id="undoBtn" class="btn btn-primary">
-                            <i class="fas fa-undo"></i> تراجع
-                        </button>
-                        <button id="redoBtn" class="btn btn-primary">
-                            <i class="fas fa-redo"></i> إعادة
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Canvas Section -->
-            <div class="canvas-section">
-                <div class="canvas-container">
-                    <canvas id="drawingCanvas"></canvas>
-                </div>
-                
-                <div class="status-bar">
-                    <div class="status-indicator">
-                        <div class="status-dot" id="connectionStatus"></div>
-                        <span id="status">غير متصل. اضغط على "البحث عن لاعب" للبدء.</span>
-                    </div>
-                    <div class="player-info" id="playerInfo"></div>
-                </div>
-            </div>
+        <div class="game-controls">
+            <button id="findPlayerBtn" class="btn btn-primary">البحث عن لاعب</button>
+            <button id="clearBtn" class="btn btn-danger">مسح اللوحة</button>
+            <button id="leaveBtn" class="btn btn-danger" disabled>مغادرة اللعبة</button>
+        </div>
+        
+        <div id="status" class="status">
+            غير متصل. اضغط على "البحث عن لاعب" للبدء.
+        </div>
+        
+        <div class="tools">
+            <div class="tool active" data-tool="brush">فرشاة</div>
+            <div class="tool" data-tool="eraser">ممحاة</div>
+        </div>
+        
+        <div class="color-picker">
+            <div class="color active" style="background-color: #000000;" data-color="#000000"></div>
+            <div class="color" style="background-color: #e74c3c;" data-color="#e74c3c"></div>
+            <div class="color" style="background-color: #3498db;" data-color="#3498db"></div>
+            <div class="color" style="background-color: #2ecc71;" data-color="#2ecc71"></div>
+            <div class="color" style="background-color: #f1c40f;" data-color="#f1c40f"></div>
+            <div class="color" style="background-color: #9b59b6;" data-color="#9b59b6"></div>
+        </div>
+        
+        <div class="brush-size">
+            <label for="brushSize">حجم الفرشاة: </label>
+            <input type="range" id="brushSize" min="1" max="20" value="5">
+            <span id="brushSizeValue">5</span>
+        </div>
+        
+        <div class="canvas-container">
+            <canvas id="drawingCanvas"></canvas>
         </div>
     </div>
     
-    <!-- Waiting Screen -->
     <div class="waiting-screen" id="waitingScreen">
         <div class="spinner"></div>
-        <h2 class="waiting-text">جاري البحث عن لاعب...</h2>
-        <p class="waiting-subtext">يرجى الانتظار</p>
-        <button id="cancelSearchBtn" class="btn btn-danger">
-            <i class="fas fa-times"></i> إلغاء البحث
-        </button>
+        <h2>جاري البحث عن لاعب...</h2>
+        <p>يرجى الانتظار</p>
+        <button id="cancelSearchBtn" class="btn btn-danger">إلغاء البحث</button>
     </div>
-    
-    <!-- Toast Notifications -->
-    <div class="toast-container" id="toastContainer"></div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // User data
-            let userData = {
-                username: 'زائر',
-                avatar: null
-            };
-            
             // Canvas setup
             const canvas = document.getElementById('drawingCanvas');
             const ctx = canvas.getContext('2d');
@@ -885,12 +216,6 @@
             function resizeCanvas() {
                 canvas.width = container.clientWidth;
                 canvas.height = container.clientHeight;
-                
-                // Redraw canvas content if needed
-                if (isConnected) {
-                    // Request current canvas state from server
-                    socket.emit('request_canvas_state', { roomId });
-                }
             }
             
             resizeCanvas();
@@ -900,17 +225,9 @@
             let isDrawing = false;
             let lastX = 0;
             let lastY = 0;
-            let startX = 0;
-            let startY = 0;
             let currentColor = '#000000';
             let brushSize = 5;
-            let opacity = 1;
             let currentTool = 'brush';
-            
-            // History for undo/redo
-            let history = [];
-            let historyIndex = -1;
-            const maxHistorySteps = 20;
             
             // Socket.io setup
             const socket = io();
@@ -922,67 +239,11 @@
             const findPlayerBtn = document.getElementById('findPlayerBtn');
             const clearBtn = document.getElementById('clearBtn');
             const leaveBtn = document.getElementById('leaveBtn');
-            const undoBtn = document.getElementById('undoBtn');
-            const redoBtn = document.getElementById('redoBtn');
             const statusDiv = document.getElementById('status');
-            const connectionStatus = document.getElementById('connectionStatus');
             const waitingScreen = document.getElementById('waitingScreen');
             const cancelSearchBtn = document.getElementById('cancelSearchBtn');
-            const playerInfo = document.getElementById('playerInfo');
             const brushSizeInput = document.getElementById('brushSize');
             const brushSizeValue = document.getElementById('brushSizeValue');
-            const opacityControl = document.getElementById('opacityControl');
-            const opacityValue = document.getElementById('opacityValue');
-            const loginModal = document.getElementById('loginModal');
-            const loginForm = document.getElementById('loginForm');
-            const usernameInput = document.getElementById('username');
-            const avatarUpload = document.getElementById('avatarUpload');
-            const avatarPreview = document.getElementById('avatarPreview');
-            const loginSubmit = document.getElementById('loginSubmit');
-            const userAvatar = document.getElementById('userAvatar');
-            const userName = document.getElementById('userName');
-            
-            // Show login modal on page load
-            loginModal.classList.add('active');
-            
-            // Close modal when clicking on close button
-            document.querySelector('.modal-close').addEventListener('click', function() {
-                loginModal.classList.remove('active');
-            });
-            
-            // Handle avatar upload
-            avatarUpload.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(event) {
-                        avatarPreview.innerHTML = `<img src="${event.target.result}" alt="Avatar">`;
-                        userData.avatar = event.target.result;
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-            
-            // Handle login form submission
-            loginSubmit.addEventListener('click', function() {
-                if (usernameInput.value.trim() !== '') {
-                    userData.username = usernameInput.value.trim();
-                    
-                    // Update UI with user data
-                    userName.textContent = userData.username;
-                    if (userData.avatar) {
-                        userAvatar.innerHTML = `<img src="${userData.avatar}" alt="Avatar">`;
-                    }
-                    
-                    // Close modal
-                    loginModal.classList.remove('active');
-                    
-                    // Show welcome toast
-                    showToast('success', `مرحباً ${userData.username}! يمكنك الآن البدء بالرسم.`);
-                } else {
-                    showToast('error', 'يرجى إدخال اسم المستخدم');
-                }
-            });
             
             // Color picker
             const colorElements = document.querySelectorAll('.color');
@@ -1003,7 +264,7 @@
             });
             
             // Tool selection
-            const toolElements = document.querySelectorAll('.tool-btn');
+            const toolElements = document.querySelectorAll('.tool');
             toolElements.forEach(tool => {
                 tool.addEventListener('click', function() {
                     setTool(this.getAttribute('data-tool'));
@@ -1014,27 +275,6 @@
                 currentTool = tool;
                 toolElements.forEach(t => t.classList.remove('active'));
                 document.querySelector(`[data-tool="${tool}"]`).classList.add('active');
-                
-                // Change cursor based on tool
-                switch(tool) {
-                    case 'brush':
-                        canvas.style.cursor = 'crosshair';
-                        break;
-                    case 'eraser':
-                        canvas.style.cursor = 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\'%3E%3Cpath d=\'M0 0h24v24H0z\' fill=\'none\'/%3E%3Cpath d=\'M15.14 3c-.51 0-1.02.2-1.41.59L2.59 14.73c-.78.77-.78 2.04 0 2.83L5.03 20h7.94l8.59-8.59c.78-.77.78-2.04 0-2.83l-4.24-4.24c-.39-.39-.9-.59-1.41-.59zM6.45 18L4.97 16.5l7.07-7.07 1.47 1.47L6.45 18z\' fill=\'%23333\'/%3E%3C/svg%3E") 0 24, auto';
-                        break;
-                    case 'eyedropper':
-                        canvas.style.cursor = 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\'%3E%3Cpath d=\'M0 0h24v24H0z\' fill=\'none\'/%3E%3Cpath d=\'M20.71 5.63l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-3.12 3.12-1.93-1.91-1.41 1.41 1.42 1.42L3 16.25V21h4.75l8.92-8.92 1.42 1.42 1.41-1.41-1.92-1.92 3.12-3.12c.4-.4.4-1.03.01-1.42zM6.92 19L5 17.08l8.06-8.06 1.92 1.92L6.92 19z\' fill=\'%23333\'/%3E%3C/svg%3E") 0 24, auto';
-                        break;
-                    case 'fill':
-                        canvas.style.cursor = 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\'%3E%3Cpath d=\'M0 0h24v24H0z\' fill=\'none\'/%3E%3Cpath d=\'M16.56 8.94L7.62 0 6.21 1.41l2.38 2.38-5.15 5.15c-.59.59-.59 1.54 0 2.12l5.5 5.5c.29.29.68.44 1.06.44s.77-.15 1.06-.44l5.5-5.5c.59-.58.59-1.53 0-2.12zM5.21 10L10 5.21 14.79 10H5.21zM19 11.5s-2 2.17-2 3.5c0 1.1.9 2 2 2s2-.9 2-2c0-1.33-2-3.5-2-3.5z\' fill=\'%23333\'/%3E%3C/svg%3E") 0 24, auto';
-                        break;
-                    case 'text':
-                        canvas.style.cursor = 'text';
-                        break;
-                    default:
-                        canvas.style.cursor = 'crosshair';
-                }
             }
             
             // Brush size
@@ -1043,98 +283,12 @@
                 brushSizeValue.textContent = brushSize;
             });
             
-            // Opacity control
-            opacityControl.addEventListener('input', function() {
-                opacity = this.value / 100;
-                opacityValue.textContent = `${this.value}%`;
-            });
-            
-            // Save canvas state for undo/redo
-            function saveCanvasState() {
-                // Limit history size
-                if (historyIndex < history.length - 1) {
-                    history = history.slice(0, historyIndex + 1);
-                }
-                
-                if (history.length >= maxHistorySteps) {
-                    history.shift();
-                } else {
-                    historyIndex++;
-                }
-                
-                history.push(canvas.toDataURL());
-                
-                // Update undo/redo buttons
-                updateUndoRedoButtons();
-            }
-            
-            // Update undo/redo buttons state
-            function updateUndoRedoButtons() {
-                undoBtn.disabled = historyIndex < 0;
-                redoBtn.disabled = historyIndex >= history.length - 1;
-            }
-            
-            // Undo action
-            undoBtn.addEventListener('click', function() {
-                if (historyIndex > 0) {
-                    historyIndex--;
-                    restoreCanvasState();
-                    
-                    // Emit undo event
-                    if (isConnected) {
-                        socket.emit('canvas_state_change', {
-                            roomId: roomId,
-                            dataUrl: history[historyIndex]
-                        });
-                    }
-                }
-            });
-            
-            // Redo action
-            redoBtn.addEventListener('click', function() {
-                if (historyIndex < history.length - 1) {
-                    historyIndex++;
-                    restoreCanvasState();
-                    
-                    // Emit redo event
-                    if (isConnected) {
-                        socket.emit('canvas_state_change', {
-                            roomId: roomId,
-                            dataUrl: history[historyIndex]
-                        });
-                    }
-                }
-            });
-            
-            // Restore canvas state from history
-            function restoreCanvasState() {
-                if (historyIndex >= 0 && history[historyIndex]) {
-                    const img = new Image();
-                    img.onload = function() {
-                        ctx.clearRect(0, 0, canvas.width, canvas.height);
-                        ctx.drawImage(img, 0, 0);
-                    };
-                    img.src = history[historyIndex];
-                    
-                    // Update undo/redo buttons
-                    updateUndoRedoButtons();
-                }
-            }
-            
             // Drawing functions
             function startDrawing(e) {
                 if (!isConnected) return;
                 
                 isDrawing = true;
                 [lastX, lastY] = getMousePos(canvas, e);
-                startX = lastX;
-                startY = lastY;
-                
-                // For shape tools, save the canvas state before drawing
-                if (['rectangle', 'circle', 'line'].includes(currentTool)) {
-                    // Store a copy of the canvas for shape preview
-                    tempCanvas = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                }
                 
                 // Emit drawing start
                 socket.emit('draw_start', {
@@ -1142,168 +296,43 @@
                     y: lastY,
                     color: currentTool === 'eraser' ? '#FFFFFF' : currentColor,
                     size: brushSize,
-                    opacity: opacity,
                     tool: currentTool,
-                    roomId: roomId,
-                    userData: userData
+                    roomId: roomId
                 });
-                
-                // For text tool, prompt for text input
-                if (currentTool === 'text') {
-                    const text = prompt('أدخل النص:');
-                    if (text) {
-                        ctx.globalAlpha = opacity;
-                        ctx.fillStyle = currentColor;
-                        ctx.font = `${brushSize * 2}px Arial`;
-                        ctx.textAlign = 'left';
-                        ctx.textBaseline = 'top';
-                        ctx.fillText(text, lastX, lastY);
-                        
-                        // Emit text drawing
-                        socket.emit('draw_text', {
-                            x: lastX,
-                            y: lastY,
-                            text: text,
-                            color: currentColor,
-                            size: brushSize,
-                            opacity: opacity,
-                            roomId: roomId
-                        });
-                        
-                        // Save canvas state for undo/redo
-                        saveCanvasState();
-                    }
-                    isDrawing = false;
-                }
-                
-                // For fill tool, implement fill algorithm
-                if (currentTool === 'fill') {
-                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    const targetColor = getPixelColor(imageData, Math.floor(lastX), Math.floor(lastY));
-                    floodFill(imageData, Math.floor(lastX), Math.floor(lastY), targetColor, hexToRgb(currentColor));
-                    ctx.putImageData(imageData, 0, 0);
-                    
-                    // Emit fill action
-                    socket.emit('draw_fill', {
-                        x: lastX,
-                        y: lastY,
-                        color: currentColor,
-                        roomId: roomId
-                    });
-                    
-                    // Save canvas state for undo/redo
-                    saveCanvasState();
-                    isDrawing = false;
-                }
-                
-                // For eyedropper tool
-                if (currentTool === 'eyedropper') {
-                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    const pixelColor = getPixelColor(imageData, Math.floor(lastX), Math.floor(lastY));
-                    const hexColor = rgbToHex(pixelColor.r, pixelColor.g, pixelColor.b);
-                    
-                    // Set as current color
-                    currentColor = hexColor;
-                    
-                    // Update color picker UI
-                    colorElements.forEach(c => c.classList.remove('active'));
-                    const matchingColor = Array.from(colorElements).find(c => c.getAttribute('data-color').toLowerCase() === hexColor.toLowerCase());
-                    if (matchingColor) {
-                        matchingColor.classList.add('active');
-                    }
-                    
-                    // Switch to brush tool
-                    setTool('brush');
-                    isDrawing = false;
-                }
             }
-            
-            // Temporary canvas for shape preview
-            let tempCanvas;
             
             function draw(e) {
                 if (!isDrawing || !isConnected) return;
                 
                 const [x, y] = getMousePos(canvas, e);
                 
-                if (currentTool === 'brush' || currentTool === 'eraser') {
-                    // Draw line
-                    drawLine(lastX, lastY, x, y, currentTool === 'eraser' ? '#FFFFFF' : currentColor, brushSize, opacity, currentTool);
-                    
-                    // Emit drawing
-                    socket.emit('draw_move', {
-                        x0: lastX,
-                        y0: lastY,
-                        x1: x,
-                        y1: y,
-                        color: currentTool === 'eraser' ? '#FFFFFF' : currentColor,
-                        size: brushSize,
-                        opacity: opacity,
-                        tool: currentTool,
-                        roomId: roomId
-                    });
-                    
-                    [lastX, lastY] = [x, y];
-                } else if (['rectangle', 'circle', 'line'].includes(currentTool)) {
-                    // Restore the canvas state for shape preview
-                    ctx.putImageData(tempCanvas, 0, 0);
-                    
-                    // Preview the shape
-                    ctx.globalAlpha = opacity;
-                    ctx.strokeStyle = currentColor;
-                    ctx.lineWidth = brushSize;
-                    ctx.lineCap = 'round';
-                    ctx.lineJoin = 'round';
-                    
-                    if (currentTool === 'rectangle') {
-                        ctx.beginPath();
-                        ctx.rect(startX, startY, x - startX, y - startY);
-                        ctx.stroke();
-                    } else if (currentTool === 'circle') {
-                        ctx.beginPath();
-                        const radius = Math.sqrt(Math.pow(x - startX, 2) + Math.pow(y - startY, 2));
-                        ctx.arc(startX, startY, radius, 0, Math.PI * 2);
-                        ctx.stroke();
-                    } else if (currentTool === 'line') {
-                        ctx.beginPath();
-                        ctx.moveTo(startX, startY);
-                        ctx.lineTo(x, y);
-                        ctx.stroke();
-                    }
-                }
+                // Draw line
+                drawLine(lastX, lastY, x, y, currentTool === 'eraser' ? '#FFFFFF' : currentColor, brushSize, currentTool);
+                
+                // Emit drawing
+                socket.emit('draw_move', {
+                    x0: lastX,
+                    y0: lastY,
+                    x1: x,
+                    y1: y,
+                    color: currentTool === 'eraser' ? '#FFFFFF' : currentColor,
+                    size: brushSize,
+                    tool: currentTool,
+                    roomId: roomId
+                });
+                
+                [lastX, lastY] = [x, y];
             }
             
             function stopDrawing() {
                 if (!isDrawing) return;
-                
-                // For shape tools, emit the final shape
-                if (['rectangle', 'circle', 'line'].includes(currentTool)) {
-                    socket.emit('draw_shape', {
-                        startX: startX,
-                        startY: startY,
-                        endX: lastX,
-                        endY: lastY,
-                        color: currentColor,
-                        size: brushSize,
-                        opacity: opacity,
-                        tool: currentTool,
-                        roomId: roomId
-                    });
-                    
-                    // Save canvas state for undo/redo
-                    saveCanvasState();
-                } else if (currentTool === 'brush' || currentTool === 'eraser') {
-                    // Save canvas state for undo/redo
-                    saveCanvasState();
-                }
-                
                 isDrawing = false;
                 
                 // Emit drawing end
                 socket.emit('draw_end', { roomId: roomId });
             }
             
-            function drawLine(x0, y0, x1, y1, color, size, opacity, tool) {
+            function drawLine(x0, y0, x1, y1, color, size, tool) {
                 ctx.beginPath();
                 ctx.moveTo(x0, y0);
                 ctx.lineTo(x1, y1);
@@ -1311,7 +340,6 @@
                 ctx.lineWidth = size;
                 ctx.lineCap = 'round';
                 ctx.lineJoin = 'round';
-                ctx.globalAlpha = opacity;
                 
                 if (tool === 'eraser') {
                     ctx.globalCompositeOperation = 'destination-out';
@@ -1320,102 +348,6 @@
                 }
                 
                 ctx.stroke();
-                ctx.globalAlpha = 1; // Reset alpha
-            }
-            
-            function drawShape(startX, startY, endX, endY, color, size, opacity, tool) {
-                ctx.globalAlpha = opacity;
-                ctx.strokeStyle = color;
-                ctx.lineWidth = size;
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                
-                if (tool === 'rectangle') {
-                    ctx.beginPath();
-                    ctx.rect(startX, startY, endX - startX, endY - startY);
-                    ctx.stroke();
-                } else if (tool === 'circle') {
-                    ctx.beginPath();
-                    const radius = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
-                    ctx.arc(startX, startY, radius, 0, Math.PI * 2);
-                    ctx.stroke();
-                } else if (tool === 'line') {
-                    ctx.beginPath();
-                    ctx.moveTo(startX, startY);
-                    ctx.lineTo(endX, endY);
-                    ctx.stroke();
-                }
-                
-                ctx.globalAlpha = 1; // Reset alpha
-            }
-            
-            // Flood fill algorithm
-            function floodFill(imageData, x, y, targetColor, fillColor) {
-                const width = imageData.width;
-                const height = imageData.height;
-                const data = imageData.data;
-                
-                // Check if target color is the same as fill color
-                if (
-                    targetColor.r === fillColor.r &&
-                    targetColor.g === fillColor.g &&
-                    targetColor.b === fillColor.b
-                ) {
-                    return;
-                }
-                
-                const stack = [{x, y}];
-                
-                while (stack.length > 0) {
-                    const {x, y} = stack.pop();
-                    const pos = (y * width + x) * 4;
-                    
-                    // Check if this pixel is the target color
-                    if (
-                        data[pos] === targetColor.r &&
-                        data[pos + 1] === targetColor.g &&
-                        data[pos + 2] === targetColor.b
-                    ) {
-                        // Set the pixel to the fill color
-                        data[pos] = fillColor.r;
-                        data[pos + 1] = fillColor.g;
-                        data[pos + 2] = fillColor.b;
-                        data[pos + 3] = 255; // Alpha
-                        
-                        // Add neighboring pixels to the stack
-                        if (x > 0) stack.push({x: x - 1, y});
-                        if (x < width - 1) stack.push({x: x + 1, y});
-                        if (y > 0) stack.push({x, y: y - 1});
-                        if (y < height - 1) stack.push({x, y: y + 1});
-                    }
-                }
-            }
-            
-            // Get pixel color at position
-            function getPixelColor(imageData, x, y) {
-                const data = imageData.data;
-                const pos = (y * imageData.width + x) * 4;
-                return {
-                    r: data[pos],
-                    g: data[pos + 1],
-                    b: data[pos + 2],
-                    a: data[pos + 3]
-                };
-            }
-            
-            // Convert RGB to Hex
-            function rgbToHex(r, g, b) {
-                return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
-            }
-            
-            // Convert Hex to RGB
-            function hexToRgb(hex) {
-                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-                return result ? {
-                    r: parseInt(result[1], 16),
-                    g: parseInt(result[2], 16),
-                    b: parseInt(result[3], 16)
-                } : {r: 0, g: 0, b: 0};
             }
             
             // Helper function to get mouse position
@@ -1462,9 +394,6 @@
                 
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 socket.emit('clear_canvas', { roomId: roomId });
-                
-                // Save canvas state for undo/redo
-                saveCanvasState();
             });
             
             // Find player
@@ -1474,7 +403,7 @@
                 waitingScreen.style.display = 'flex';
                 statusDiv.textContent = 'جاري البحث عن لاعب...';
                 
-                socket.emit('find_player', { userData: userData });
+                socket.emit('find_player');
             });
             
             // Cancel search
@@ -1491,7 +420,6 @@
                 
                 socket.emit('leave_game', { roomId: roomId });
                 resetGame();
-                showToast('info', 'لقد غادرت اللعبة');
             });
             
             // Reset game state
@@ -1500,54 +428,8 @@
                 roomId = null;
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 statusDiv.textContent = 'غير متصل. اضغط على "البحث عن لاعب" للبدء.';
-                connectionStatus.classList.remove('connected');
                 findPlayerBtn.disabled = false;
                 leaveBtn.disabled = true;
-                playerInfo.textContent = '';
-                
-                // Reset history
-                history = [];
-                historyIndex = -1;
-                updateUndoRedoButtons();
-            }
-            
-            // Show toast notification
-            function showToast(type, message) {
-                const toastContainer = document.getElementById('toastContainer');
-                const toast = document.createElement('div');
-                toast.className = `toast toast-${type}`;
-                
-                let icon = '';
-                switch(type) {
-                    case 'success':
-                        icon = '<i class="fas fa-check-circle toast-icon"></i>';
-                        break;
-                    case 'error':
-                        icon = '<i class="fas fa-exclamation-circle toast-icon"></i>';
-                        break;
-                    case 'info':
-                        icon = '<i class="fas fa-info-circle toast-icon"></i>';
-                        break;
-                    case 'warning':
-                        icon = '<i class="fas fa-exclamation-triangle toast-icon"></i>';
-                        break;
-                }
-                
-                toast.innerHTML = `${icon}<span>${message}</span>`;
-                toastContainer.appendChild(toast);
-                
-                // Show toast with animation
-                setTimeout(() => {
-                    toast.classList.add('show');
-                }, 10);
-                
-                // Auto remove after 3 seconds
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                    setTimeout(() => {
-                        toastContainer.removeChild(toast);
-                    }, 300);
-                }, 3000);
             }
             
             // Socket events
@@ -1561,34 +443,12 @@
                 isConnected = true;
                 waitingScreen.style.display = 'none';
                 statusDiv.textContent = 'تم العثور على لاعب! يمكنك البدء بالرسم الآن.';
-                connectionStatus.classList.add('connected');
                 findPlayerBtn.disabled = true;
                 leaveBtn.disabled = false;
-                
-                // Display opponent info
-                const opponent = data.players.find(p => p.id !== playerId);
-                if (opponent) {
-                    let avatarHtml = '<div class="player-avatar">';
-                    if (opponent.userData && opponent.userData.avatar) {
-                        avatarHtml += `<img src="${opponent.userData.avatar}" alt="Avatar">`;
-                    } else {
-                        avatarHtml += '<i class="fas fa-user"></i>';
-                    }
-                    avatarHtml += '</div>';
-                    
-                    playerInfo.innerHTML = `${avatarHtml} <span>تلعب مع: ${opponent.userData ? opponent.userData.username : 'لاعب آخر'}</span>`;
-                }
-                
-                // Initialize canvas history
-                saveCanvasState();
-                
-                // Show toast
-                showToast('success', 'تم العثور على لاعب! ابدأ الرسم الآن.');
             });
             
             socket.on('player_left', function() {
                 statusDiv.textContent = 'غادر اللاعب الآخر. اضغط على "البحث عن لاعب" للبدء من جديد.';
-                showToast('warning', 'غادر اللاعب الآخر اللعبة');
                 resetGame();
             });
             
@@ -1600,107 +460,18 @@
             
             socket.on('draw_move', function(data) {
                 // Another player is drawing
-                drawLine(data.x0, data.y0, data.x1, data.y1, data.color, data.size, data.opacity, data.tool);
-            });
-            
-            socket.on('draw_shape', function(data) {
-                // Another player drew a shape
-                drawShape(data.startX, data.startY, data.endX, data.endY, data.color, data.size, data.opacity, data.tool);
-                
-                // Save canvas state for undo/redo
-                saveCanvasState();
-            });
-            
-            socket.on('draw_text', function(data) {
-                // Another player added text
-                ctx.globalAlpha = data.opacity;
-                ctx.fillStyle = data.color;
-                ctx.font = `${data.size * 2}px Arial`;
-                ctx.textAlign = 'left';
-                ctx.textBaseline = 'top';
-                ctx.fillText(data.text, data.x, data.y);
-                ctx.globalAlpha = 1;
-                
-                // Save canvas state for undo/redo
-                saveCanvasState();
-            });
-            
-            socket.on('draw_fill', function(data) {
-                // Another player used fill tool
-                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const targetColor = getPixelColor(imageData, Math.floor(data.x), Math.floor(data.y));
-                floodFill(imageData, Math.floor(data.x), Math.floor(data.y), targetColor, hexToRgb(data.color));
-                ctx.putImageData(imageData, 0, 0);
-                
-                // Save canvas state for undo/redo
-                saveCanvasState();
+                drawLine(data.x0, data.y0, data.x1, data.y1, data.color, data.size, data.tool);
             });
             
             socket.on('clear_canvas', function() {
                 // Another player cleared the canvas
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                // Save canvas state for undo/redo
-                saveCanvasState();
-            });
-            
-            socket.on('canvas_state_change', function(data) {
-                // Another player changed canvas state (undo/redo)
-                const img = new Image();
-                img.onload = function() {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.drawImage(img, 0, 0);
-                    
-                    // Update history without triggering new save
-                    if (historyIndex < history.length - 1) {
-                        history = history.slice(0, historyIndex + 1);
-                    }
-                    
-                    if (history.length >= maxHistorySteps) {
-                        history.shift();
-                    } else {
-                        historyIndex++;
-                    }
-                    
-                    history.push(data.dataUrl);
-                    updateUndoRedoButtons();
-                };
-                img.src = data.dataUrl;
-            });
-            
-            socket.on('request_canvas_state', function() {
-                // Send current canvas state to new player
-                if (isConnected) {
-                    socket.emit('canvas_state_update', {
-                        roomId: roomId,
-                        dataUrl: canvas.toDataURL()
-                    });
-                }
-            });
-            
-            socket.on('canvas_state_update', function(data) {
-                // Receive canvas state from other player
-                const img = new Image();
-                img.onload = function() {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.drawImage(img, 0, 0);
-                    
-                    // Save initial state for undo/redo
-                    if (history.length === 0) {
-                        saveCanvasState();
-                    }
-                };
-                img.src = data.dataUrl;
             });
             
             socket.on('disconnect', function() {
                 resetGame();
                 statusDiv.textContent = 'انقطع الاتصال بالخادم. يرجى تحديث الصفحة.';
-                showToast('error', 'انقطع الاتصال بالخادم');
             });
-            
-            // Initialize undo/redo buttons
-            updateUndoRedoButtons();
         });
     </script>
 </body>
