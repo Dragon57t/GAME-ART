@@ -6,21 +6,6 @@
     <title>تطبيق الرسم الجماعي</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
-            --primary-color: #4361ee;
-            --secondary-color: #3a0ca3;
-            --accent-color: #7209b7;
-            --light-color: #f8f9fa;
-            --dark-color: #212529;
-            --success-color: #4cc9f0;
-            --danger-color: #f72585;
-            --warning-color: #f8961e;
-            --info-color: #90e0ef;
-            --border-radius: 8px;
-            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s ease;
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -29,47 +14,13 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background-color: #e9e9e9;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: var(--dark-color);
             padding: 20px;
-        }
-
-        .app-container {
-            width: 100%;
-            max-width: 1200px;
-            background-color: rgba(255, 255, 255, 0.95);
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            transition: var(--transition);
-        }
-
-        .app-header {
-            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 20px;
-            text-align: center;
-            position: relative;
-        }
-
-        .app-title {
-            font-size: 2.2rem;
-            margin: 0;
-            font-weight: 700;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .app-subtitle {
-            font-size: 1rem;
-            opacity: 0.9;
-            margin-top: 5px;
         }
 
         .welcome-screen {
@@ -79,24 +30,27 @@
             justify-content: center;
             padding: 40px 20px;
             text-align: center;
-            min-height: 400px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
         }
 
         .welcome-message {
-            max-width: 600px;
             margin-bottom: 30px;
         }
 
         .welcome-message h2 {
             font-size: 1.8rem;
             margin-bottom: 15px;
-            color: var(--secondary-color);
+            color: #333;
         }
 
         .welcome-message p {
             font-size: 1.1rem;
             line-height: 1.6;
-            color: var(--dark-color);
+            color: #555;
             margin-bottom: 15px;
         }
 
@@ -105,150 +59,64 @@
             font-size: 1rem;
             font-weight: 600;
             border: none;
-            border-radius: var(--border-radius);
+            border-radius: 5px;
             cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
+            transition: all 0.3s ease;
+            background-color: #4361ee;
             color: white;
         }
 
-        .btn-primary:hover {
-            background-color: var(--secondary-color);
+        .btn:hover {
+            background-color: #3a0ca3;
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        }
-
-        .btn-danger {
-            background-color: var(--danger-color);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background-color: #d90166;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        }
-
-        .btn-icon {
-            font-size: 1.1rem;
         }
 
         .status-bar {
-            background-color: var(--light-color);
-            padding: 12px 20px;
-            border-radius: var(--border-radius);
             margin: 15px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 500;
-            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
-        }
-
-        .status-indicator {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-left: 10px;
-            background-color: #ccc;
-        }
-
-        .status-indicator.connected {
-            background-color: var(--success-color);
-            box-shadow: 0 0 5px var(--success-color);
-        }
-
-        .status-indicator.disconnected {
-            background-color: var(--danger-color);
-            box-shadow: 0 0 5px var(--danger-color);
-        }
-
-        .status-indicator.waiting {
-            background-color: var(--warning-color);
-            box-shadow: 0 0 5px var(--warning-color);
-        }
-
-        /* Drawing area - initially hidden */
-        .drawing-area {
-            display: none;
-            flex-direction: column;
-            padding: 20px;
-            transition: var(--transition);
-        }
-
-        .toolbar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 20px;
-            justify-content: center;
-            padding: 15px;
-            background-color: var(--light-color);
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-        }
-
-        .tool-group {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
             padding: 10px;
-            border-radius: var(--border-radius);
-            background-color: white;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            text-align: center;
+            width: 100%;
         }
 
-        .tool-group-title {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--secondary-color);
-            margin-bottom: 5px;
+        /* Drawing board styles - based on reference image */
+        .drawing-board {
+            display: none; /* Initially hidden */
+            width: 100%;
+            max-width: 1000px;
+            aspect-ratio: 1 / 1;
+            background-color: #f5f5f5;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
         }
 
-        .tools {
-            display: flex;
-            gap: 8px;
-        }
-
-        .tool {
-            width: 40px;
-            height: 40px;
+        .board-header {
             display: flex;
             align-items: center;
-            justify-content: center;
-            border-radius: var(--border-radius);
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .player-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-right: auto;
             cursor: pointer;
-            transition: var(--transition);
-            background-color: white;
-            border: 2px solid #e9ecef;
-            color: var(--dark-color);
         }
 
-        .tool:hover {
-            background-color: #f8f9fa;
-            transform: translateY(-2px);
+        .player-name:hover {
+            text-decoration: underline;
         }
 
-        .tool.active {
-            background-color: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
-
-        .color-picker {
+        .color-palette {
             display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            justify-content: center;
+            gap: 10px;
+            margin-right: 20px;
         }
 
         .color {
@@ -256,43 +124,44 @@
             height: 30px;
             border-radius: 50%;
             cursor: pointer;
-            transition: var(--transition);
+            transition: transform 0.2s;
             border: 2px solid transparent;
         }
 
         .color:hover {
-            transform: scale(1.2);
+            transform: scale(1.1);
         }
 
         .color.active {
-            border: 2px solid var(--dark-color);
-            box-shadow: 0 0 0 2px white;
+            border: 2px solid #333;
         }
 
-        .brush-size {
+        .edit-name {
+            width: 30px;
+            height: 30px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            color: #555;
+            font-size: 1.2rem;
         }
 
-        .brush-size label {
-            font-weight: 500;
-            white-space: nowrap;
+        .edit-name:hover {
+            color: #333;
         }
 
-        .brush-size input {
-            width: 100px;
+        .drawing-area {
+            display: flex;
+            height: calc(100% - 60px);
         }
 
         .canvas-container {
-            position: relative;
-            width: 100%;
-            height: 500px;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: var(--box-shadow);
+            flex: 1;
             background-color: white;
-            margin: 0 auto;
+            position: relative;
         }
 
         #drawingCanvas {
@@ -304,11 +173,38 @@
             cursor: crosshair;
         }
 
-        .game-controls {
+        .tools-sidebar {
+            width: 60px;
+            background-color: #f5f5f5;
             display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px 0;
+            gap: 20px;
+        }
+
+        .tool {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
             justify-content: center;
-            gap: 15px;
-            margin: 20px 0;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            color: #555;
+            font-size: 1.2rem;
+            transition: all 0.2s;
+            border-radius: 5px;
+        }
+
+        .tool:hover {
+            background-color: #e0e0e0;
+        }
+
+        .tool.active {
+            background-color: #e0e0e0;
+            color: #333;
         }
 
         .waiting-screen {
@@ -317,7 +213,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.7);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -325,24 +221,24 @@
             color: white;
             z-index: 1000;
             display: none;
-            backdrop-filter: blur(5px);
         }
 
         .waiting-content {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: white;
+            color: #333;
             padding: 30px;
-            border-radius: var(--border-radius);
+            border-radius: 10px;
             text-align: center;
             max-width: 400px;
             width: 90%;
         }
 
         .spinner {
-            border: 5px solid rgba(255, 255, 255, 0.3);
-            border-top: 5px solid var(--primary-color);
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
             border-radius: 50%;
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             animation: spin 1s linear infinite;
             margin: 0 auto 20px;
         }
@@ -352,157 +248,165 @@
             100% { transform: rotate(360deg); }
         }
 
-        .waiting-screen h2 {
-            font-size: 1.8rem;
-            margin-bottom: 15px;
+        .name-edit-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            display: none;
         }
 
-        .waiting-screen p {
-            margin-bottom: 20px;
-            opacity: 0.9;
+        .name-edit-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+        }
+
+        .name-edit-content h3 {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .name-edit-content input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .name-edit-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .name-edit-buttons button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .save-name {
+            background-color: #4361ee;
+            color: white;
+        }
+
+        .cancel-name {
+            background-color: #f8f9fa;
+            color: #333;
         }
 
         /* Responsive design */
         @media (max-width: 768px) {
-            .app-title {
-                font-size: 1.8rem;
+            .drawing-board {
+                max-width: 100%;
             }
-
-            .toolbar {
-                flex-direction: column;
-                align-items: center;
+            
+            .board-header {
+                flex-wrap: wrap;
             }
-
-            .tool-group {
-                width: 100%;
+            
+            .color-palette {
+                margin-top: 10px;
+                margin-right: 0;
             }
-
-            .canvas-container {
-                height: 350px;
-            }
-
-            .game-controls {
-                flex-direction: column;
-                align-items: center;
-            }
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .fade-in {
-            animation: fadeIn 0.5s ease forwards;
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .slide-up {
-            animation: slideUp 0.5s ease forwards;
         }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <header class="app-header">
-            <h1 class="app-title">تطبيق الرسم الجماعي</h1>
-            <p class="app-subtitle">ارسم وشارك إبداعاتك مع الآخرين في الوقت الحقيقي</p>
-        </header>
+    <!-- Welcome Screen - Initially visible -->
+    <div id="welcomeScreen" class="welcome-screen">
+        <div class="welcome-message">
+            <h2>مرحباً بك في تطبيق الرسم الجماعي</h2>
+            <p>هذا التطبيق يتيح لك الرسم مع أشخاص آخرين في نفس اللوحة وفي الوقت الحقيقي.</p>
+            <p>اضغط على زر "البحث عن لاعب" للبدء في تجربة الرسم المشترك.</p>
+        </div>
+        
+        <div class="status-bar" id="statusBar">
+            غير متصل. اضغط على "البحث عن لاعب" للبدء.
+        </div>
+        
+        <button id="findPlayerBtn" class="btn">البحث عن لاعب</button>
+    </div>
 
-        <!-- Welcome Screen - Initially visible -->
-        <div id="welcomeScreen" class="welcome-screen fade-in">
-            <div class="welcome-message slide-up">
-                <h2>مرحباً بك في تطبيق الرسم الجماعي</h2>
-                <p>هذا التطبيق يتيح لك الرسم مع أشخاص آخرين في نفس اللوحة وفي الوقت الحقيقي.</p>
-                <p>اضغط على زر "البحث عن لاعب" للبدء في تجربة الرسم المشترك.</p>
+    <!-- Drawing Board - Initially hidden -->
+    <div id="drawingBoard" class="drawing-board">
+        <div class="board-header">
+            <div id="playerName" class="player-name">Player1984</div>
+            
+            <div class="color-palette">
+                <div class="color active" style="background-color: #333333;" data-color="#333333"></div>
+                <div class="color" style="background-color: #4169e1;" data-color="#4169e1"></div>
+                <div class="color" style="background-color: #4caf50;" data-color="#4caf50"></div>
+                <div class="color" style="background-color: #ffd700;" data-color="#ffd700"></div>
+                <div class="color" style="background-color: #ff5722;" data-color="#ff5722"></div>
+                <div class="color" style="background-color: #e91e63;" data-color="#e91e63"></div>
+                <div class="color" style="background-color: #795548;" data-color="#795548"></div>
             </div>
             
-            <div class="status-bar">
-                <span class="status-indicator disconnected" id="statusIndicator"></span>
-                <span id="statusText">غير متصل. اضغط على "البحث عن لاعب" للبدء.</span>
-            </div>
-            
-            <button id="findPlayerBtn" class="btn btn-primary">
-                <i class="fas fa-search btn-icon"></i>
-                البحث عن لاعب
+            <button id="editNameBtn" class="edit-name">
+                <i class="fas fa-pencil-alt"></i>
             </button>
         </div>
-
-        <!-- Drawing Area - Initially hidden -->
-        <div id="drawingArea" class="drawing-area">
-            <div class="toolbar">
-                <div class="tool-group">
-                    <div class="tool-group-title">أدوات الرسم</div>
-                    <div class="tools">
-                        <div class="tool active" data-tool="brush" title="فرشاة">
-                            <i class="fas fa-paint-brush"></i>
-                        </div>
-                        <div class="tool" data-tool="eraser" title="ممحاة">
-                            <i class="fas fa-eraser"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="tool-group">
-                    <div class="tool-group-title">الألوان</div>
-                    <div class="color-picker">
-                        <div class="color active" style="background-color: #000000;" data-color="#000000"></div>
-                        <div class="color" style="background-color: #e74c3c;" data-color="#e74c3c"></div>
-                        <div class="color" style="background-color: #3498db;" data-color="#3498db"></div>
-                        <div class="color" style="background-color: #2ecc71;" data-color="#2ecc71"></div>
-                        <div class="color" style="background-color: #f1c40f;" data-color="#f1c40f"></div>
-                        <div class="color" style="background-color: #9b59b6;" data-color="#9b59b6"></div>
-                        <div class="color" style="background-color: #e67e22;" data-color="#e67e22"></div>
-                        <div class="color" style="background-color: #1abc9c;" data-color="#1abc9c"></div>
-                    </div>
-                </div>
-                
-                <div class="tool-group">
-                    <div class="tool-group-title">حجم الفرشاة</div>
-                    <div class="brush-size">
-                        <label for="brushSize">الحجم: </label>
-                        <input type="range" id="brushSize" min="1" max="30" value="5">
-                        <span id="brushSizeValue">5</span>
-                    </div>
-                </div>
-            </div>
-            
+        
+        <div class="drawing-area">
             <div class="canvas-container">
                 <canvas id="drawingCanvas"></canvas>
             </div>
             
-            <div class="game-controls">
-                <button id="clearBtn" class="btn btn-danger">
-                    <i class="fas fa-trash-alt btn-icon"></i>
-                    مسح اللوحة
+            <div class="tools-sidebar">
+                <button class="tool active" data-tool="brush" title="قلم">
+                    <i class="fas fa-pen"></i>
                 </button>
-                <button id="leaveBtn" class="btn btn-danger">
-                    <i class="fas fa-sign-out-alt btn-icon"></i>
-                    مغادرة اللعبة
+                <button class="tool" data-tool="eraser" title="ممحاة">
+                    <i class="fas fa-eraser"></i>
                 </button>
-            </div>
-            
-            <div class="status-bar">
-                <span class="status-indicator connected" id="gameStatusIndicator"></span>
-                <span id="gameStatusText">متصل مع لاعب آخر. يمكنك البدء بالرسم الآن.</span>
+                <button class="tool" data-tool="circle" title="دائرة">
+                    <i class="far fa-circle"></i>
+                </button>
+                <button class="tool" data-tool="rectangle" title="مستطيل">
+                    <i class="far fa-square"></i>
+                </button>
+                <button class="tool" data-tool="line" title="خط">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <button id="clearBtn" class="tool" title="مسح اللوحة">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+                <button id="leaveBtn" class="tool" title="مغادرة اللعبة">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
             </div>
         </div>
     </div>
     
+    <!-- Waiting Screen -->
     <div class="waiting-screen" id="waitingScreen">
         <div class="waiting-content">
             <div class="spinner"></div>
             <h2>جاري البحث عن لاعب...</h2>
             <p>يرجى الانتظار حتى يتم العثور على لاعب آخر</p>
-            <button id="cancelSearchBtn" class="btn btn-danger">
-                <i class="fas fa-times btn-icon"></i>
-                إلغاء البحث
-            </button>
+            <button id="cancelSearchBtn" class="btn">إلغاء البحث</button>
+        </div>
+    </div>
+    
+    <!-- Name Edit Modal -->
+    <div class="name-edit-modal" id="nameEditModal">
+        <div class="name-edit-content">
+            <h3>تغيير اسم اللاعب</h3>
+            <input type="text" id="nameInput" placeholder="أدخل اسمك هنا">
+            <div class="name-edit-buttons">
+                <button id="saveNameBtn" class="save-name">حفظ</button>
+                <button id="cancelNameBtn" class="cancel-name">إلغاء</button>
+            </div>
         </div>
     </div>
 
@@ -511,18 +415,19 @@
         document.addEventListener('DOMContentLoaded', function() {
             // UI elements
             const welcomeScreen = document.getElementById('welcomeScreen');
-            const drawingArea = document.getElementById('drawingArea');
+            const drawingBoard = document.getElementById('drawingBoard');
             const findPlayerBtn = document.getElementById('findPlayerBtn');
             const clearBtn = document.getElementById('clearBtn');
             const leaveBtn = document.getElementById('leaveBtn');
-            const statusText = document.getElementById('statusText');
-            const statusIndicator = document.getElementById('statusIndicator');
-            const gameStatusText = document.getElementById('gameStatusText');
-            const gameStatusIndicator = document.getElementById('gameStatusIndicator');
+            const statusBar = document.getElementById('statusBar');
             const waitingScreen = document.getElementById('waitingScreen');
             const cancelSearchBtn = document.getElementById('cancelSearchBtn');
-            const brushSizeInput = document.getElementById('brushSize');
-            const brushSizeValue = document.getElementById('brushSizeValue');
+            const playerName = document.getElementById('playerName');
+            const editNameBtn = document.getElementById('editNameBtn');
+            const nameEditModal = document.getElementById('nameEditModal');
+            const nameInput = document.getElementById('nameInput');
+            const saveNameBtn = document.getElementById('saveNameBtn');
+            const cancelNameBtn = document.getElementById('cancelNameBtn');
             
             // Canvas setup
             const canvas = document.getElementById('drawingCanvas');
@@ -539,9 +444,11 @@
             let isDrawing = false;
             let lastX = 0;
             let lastY = 0;
-            let currentColor = '#000000';
+            let currentColor = '#333333';
             let brushSize = 5;
             let currentTool = 'brush';
+            let shapeStartX = 0;
+            let shapeStartY = 0;
             
             // Socket.io setup
             const socket = io();
@@ -574,22 +481,24 @@
             // Tool selection
             const toolElements = document.querySelectorAll('.tool');
             toolElements.forEach(tool => {
-                tool.addEventListener('click', function() {
-                    setTool(this.getAttribute('data-tool'));
-                });
+                if (!tool.id) { // Skip buttons with IDs (clear, leave)
+                    tool.addEventListener('click', function() {
+                        setTool(this.getAttribute('data-tool'));
+                    });
+                }
             });
             
             function setTool(tool) {
                 currentTool = tool;
-                toolElements.forEach(t => t.classList.remove('active'));
-                document.querySelector(`[data-tool="${tool}"]`).classList.add('active');
+                toolElements.forEach(t => {
+                    if (!t.id) { // Skip buttons with IDs (clear, leave)
+                        t.classList.remove('active');
+                        if (t.getAttribute('data-tool') === tool) {
+                            t.classList.add('active');
+                        }
+                    }
+                });
             }
-            
-            // Brush size
-            brushSizeInput.addEventListener('input', function() {
-                brushSize = this.value;
-                brushSizeValue.textContent = brushSize;
-            });
             
             // Drawing functions
             function startDrawing(e) {
@@ -598,15 +507,20 @@
                 isDrawing = true;
                 [lastX, lastY] = getMousePos(canvas, e);
                 
-                // Emit drawing start
-                socket.emit('draw_start', {
-                    x: lastX,
-                    y: lastY,
-                    color: currentTool === 'eraser' ? '#FFFFFF' : currentColor,
-                    size: brushSize,
-                    tool: currentTool,
-                    roomId: roomId
-                });
+                if (currentTool === 'circle' || currentTool === 'rectangle' || currentTool === 'line') {
+                    shapeStartX = lastX;
+                    shapeStartY = lastY;
+                } else {
+                    // Emit drawing start for brush and eraser
+                    socket.emit('draw_start', {
+                        x: lastX,
+                        y: lastY,
+                        color: currentTool === 'eraser' ? '#FFFFFF' : currentColor,
+                        size: brushSize,
+                        tool: currentTool,
+                        roomId: roomId
+                    });
+                }
             }
             
             function draw(e) {
@@ -614,26 +528,95 @@
                 
                 const [x, y] = getMousePos(canvas, e);
                 
-                // Draw line
-                drawLine(lastX, lastY, x, y, currentTool === 'eraser' ? '#FFFFFF' : currentColor, brushSize, currentTool);
-                
-                // Emit drawing
-                socket.emit('draw_move', {
-                    x0: lastX,
-                    y0: lastY,
-                    x1: x,
-                    y1: y,
-                    color: currentTool === 'eraser' ? '#FFFFFF' : currentColor,
-                    size: brushSize,
-                    tool: currentTool,
-                    roomId: roomId
-                });
-                
-                [lastX, lastY] = [x, y];
+                if (currentTool === 'brush' || currentTool === 'eraser') {
+                    // Draw line
+                    drawLine(lastX, lastY, x, y, currentTool === 'eraser' ? '#FFFFFF' : currentColor, brushSize, currentTool);
+                    
+                    // Emit drawing
+                    socket.emit('draw_move', {
+                        x0: lastX,
+                        y0: lastY,
+                        x1: x,
+                        y1: y,
+                        color: currentTool === 'eraser' ? '#FFFFFF' : currentColor,
+                        size: brushSize,
+                        tool: currentTool,
+                        roomId: roomId
+                    });
+                    
+                    [lastX, lastY] = [x, y];
+                } else if (currentTool === 'circle' || currentTool === 'rectangle' || currentTool === 'line') {
+                    // For shapes, we'll preview them as the user drags
+                    // Clear the canvas (or use a temporary canvas for preview)
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    
+                    if (currentTool === 'circle') {
+                        const radius = Math.sqrt(Math.pow(x - shapeStartX, 2) + Math.pow(y - shapeStartY, 2));
+                        drawCircle(shapeStartX, shapeStartY, radius, currentColor, brushSize);
+                    } else if (currentTool === 'rectangle') {
+                        drawRectangle(shapeStartX, shapeStartY, x - shapeStartX, y - shapeStartY, currentColor, brushSize);
+                    } else if (currentTool === 'line') {
+                        drawLine(shapeStartX, shapeStartY, x, y, currentColor, brushSize, 'brush');
+                    }
+                    
+                    // Restore the original image data after a short delay
+                    setTimeout(() => {
+                        ctx.putImageData(imageData, 0, 0);
+                    }, 50);
+                }
             }
             
-            function stopDrawing() {
-                if (!isDrawing) return;
+            function stopDrawing(e) {
+                if (!isDrawing || !isConnected) return;
+                
+                if (currentTool === 'circle' || currentTool === 'rectangle' || currentTool === 'line') {
+                    const [x, y] = getMousePos(canvas, e);
+                    
+                    if (currentTool === 'circle') {
+                        const radius = Math.sqrt(Math.pow(x - shapeStartX, 2) + Math.pow(y - shapeStartY, 2));
+                        drawCircle(shapeStartX, shapeStartY, radius, currentColor, brushSize);
+                        
+                        // Emit circle drawing
+                        socket.emit('draw_shape', {
+                            type: 'circle',
+                            x: shapeStartX,
+                            y: shapeStartY,
+                            radius: radius,
+                            color: currentColor,
+                            size: brushSize,
+                            roomId: roomId
+                        });
+                    } else if (currentTool === 'rectangle') {
+                        drawRectangle(shapeStartX, shapeStartY, x - shapeStartX, y - shapeStartY, currentColor, brushSize);
+                        
+                        // Emit rectangle drawing
+                        socket.emit('draw_shape', {
+                            type: 'rectangle',
+                            x: shapeStartX,
+                            y: shapeStartY,
+                            width: x - shapeStartX,
+                            height: y - shapeStartY,
+                            color: currentColor,
+                            size: brushSize,
+                            roomId: roomId
+                        });
+                    } else if (currentTool === 'line') {
+                        drawLine(shapeStartX, shapeStartY, x, y, currentColor, brushSize, 'brush');
+                        
+                        // Emit line drawing
+                        socket.emit('draw_shape', {
+                            type: 'line',
+                            x0: shapeStartX,
+                            y0: shapeStartY,
+                            x1: x,
+                            y1: y,
+                            color: currentColor,
+                            size: brushSize,
+                            roomId: roomId
+                        });
+                    }
+                }
+                
                 isDrawing = false;
                 
                 // Emit drawing end
@@ -655,6 +638,22 @@
                     ctx.globalCompositeOperation = 'source-over';
                 }
                 
+                ctx.stroke();
+            }
+            
+            function drawCircle(x, y, radius, color, size) {
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, Math.PI * 2);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = size;
+                ctx.stroke();
+            }
+            
+            function drawRectangle(x, y, width, height, color, size) {
+                ctx.beginPath();
+                ctx.rect(x, y, width, height);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = size;
                 ctx.stroke();
             }
             
@@ -709,8 +708,7 @@
                 if (isConnected) return;
                 
                 waitingScreen.style.display = 'flex';
-                statusText.textContent = 'جاري البحث عن لاعب...';
-                statusIndicator.className = 'status-indicator waiting';
+                statusBar.textContent = 'جاري البحث عن لاعب...';
                 
                 socket.emit('find_player');
             });
@@ -718,8 +716,7 @@
             // Cancel search
             cancelSearchBtn.addEventListener('click', function() {
                 waitingScreen.style.display = 'none';
-                statusText.textContent = 'تم إلغاء البحث. اضغط على "البحث عن لاعب" للمحاولة مرة أخرى.';
-                statusIndicator.className = 'status-indicator disconnected';
+                statusBar.textContent = 'تم إلغاء البحث. اضغط على "البحث عن لاعب" للمحاولة مرة أخرى.';
                 
                 socket.emit('cancel_search');
             });
@@ -732,27 +729,44 @@
                 resetGame();
             });
             
+            // Edit player name
+            editNameBtn.addEventListener('click', function() {
+                nameInput.value = playerName.textContent;
+                nameEditModal.style.display = 'flex';
+            });
+            
+            // Save player name
+            saveNameBtn.addEventListener('click', function() {
+                const newName = nameInput.value.trim();
+                if (newName) {
+                    playerName.textContent = newName;
+                    socket.emit('update_name', { name: newName, roomId: roomId });
+                }
+                nameEditModal.style.display = 'none';
+            });
+            
+            // Cancel name edit
+            cancelNameBtn.addEventListener('click', function() {
+                nameEditModal.style.display = 'none';
+            });
+            
             // Reset game state
             function resetGame() {
                 isConnected = false;
                 roomId = null;
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
-                // Show welcome screen, hide drawing area
+                // Show welcome screen, hide drawing board
                 welcomeScreen.style.display = 'flex';
-                drawingArea.style.display = 'none';
+                drawingBoard.style.display = 'none';
                 
-                statusText.textContent = 'غير متصل. اضغط على "البحث عن لاعب" للبدء.';
-                statusIndicator.className = 'status-indicator disconnected';
-                
-                findPlayerBtn.disabled = false;
+                statusBar.textContent = 'غير متصل. اضغط على "البحث عن لاعب" للبدء.';
             }
             
             // Socket events
             socket.on('connect', function() {
                 playerId = socket.id;
-                statusText.textContent = 'متصل بالخادم. اضغط على "البحث عن لاعب" للبدء.';
-                statusIndicator.className = 'status-indicator connected';
+                statusBar.textContent = 'متصل بالخادم. اضغط على "البحث عن لاعب" للبدء.';
             });
             
             socket.on('game_start', function(data) {
@@ -760,21 +774,17 @@
                 isConnected = true;
                 waitingScreen.style.display = 'none';
                 
-                // Hide welcome screen, show drawing area
+                // Hide welcome screen, show drawing board
                 welcomeScreen.style.display = 'none';
-                drawingArea.style.display = 'flex';
-                drawingArea.classList.add('fade-in');
+                drawingBoard.style.display = 'block';
                 
-                gameStatusText.textContent = 'متصل مع لاعب آخر. يمكنك البدء بالرسم الآن.';
-                gameStatusIndicator.className = 'status-indicator connected';
-                
-                // Resize canvas after showing drawing area
+                // Resize canvas after showing drawing board
                 setTimeout(resizeCanvas, 100);
             });
             
             socket.on('player_left', function() {
                 resetGame();
-                statusText.textContent = 'غادر اللاعب الآخر. اضغط على "البحث عن لاعب" للبدء من جديد.';
+                statusBar.textContent = 'غادر اللاعب الآخر. اضغط على "البحث عن لاعب" للبدء من جديد.';
             });
             
             socket.on('draw_start', function(data) {
@@ -788,15 +798,30 @@
                 drawLine(data.x0, data.y0, data.x1, data.y1, data.color, data.size, data.tool);
             });
             
+            socket.on('draw_shape', function(data) {
+                // Another player drew a shape
+                if (data.type === 'circle') {
+                    drawCircle(data.x, data.y, data.radius, data.color, data.size);
+                } else if (data.type === 'rectangle') {
+                    drawRectangle(data.x, data.y, data.width, data.height, data.color, data.size);
+                } else if (data.type === 'line') {
+                    drawLine(data.x0, data.y0, data.x1, data.y1, data.color, data.size, 'brush');
+                }
+            });
+            
             socket.on('clear_canvas', function() {
                 // Another player cleared the canvas
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
             });
             
+            socket.on('update_name', function(data) {
+                // Another player updated their name
+                // This would be used in a more complex version with player identification
+            });
+            
             socket.on('disconnect', function() {
                 resetGame();
-                statusText.textContent = 'انقطع الاتصال بالخادم. يرجى تحديث الصفحة.';
-                statusIndicator.className = 'status-indicator disconnected';
+                statusBar.textContent = 'انقطع الاتصال بالخادم. يرجى تحديث الصفحة.';
             });
         });
     </script>
