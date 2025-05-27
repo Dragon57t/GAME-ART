@@ -4,73 +4,297 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تطبيق الرسم الجماعي</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --accent-color: #7209b7;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #4cc9f0;
+            --danger-color: #f72585;
+            --warning-color: #f8961e;
+            --info-color: #90e0ef;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
             margin: 0;
             padding: 0;
-            background-color: #f0f8ff;
-            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-        }
-        .container {
-            width: 100%;
-            max-width: 1000px;
-            margin: 20px auto;
-            text-align: center;
-        }
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-        }
-        .game-controls {
-            margin-bottom: 20px;
-            display: flex;
             justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
+            color: var(--dark-color);
+            padding: 20px;
         }
+
+        .app-container {
+            width: 100%;
+            max-width: 1200px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+        }
+
+        .app-header {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .app-title {
+            font-size: 2.2rem;
+            margin: 0;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .app-subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .welcome-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            text-align: center;
+            min-height: 400px;
+        }
+
+        .welcome-message {
+            max-width: 600px;
+            margin-bottom: 30px;
+        }
+
+        .welcome-message h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--secondary-color);
+        }
+
+        .welcome-message p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: var(--dark-color);
+            margin-bottom: 15px;
+        }
+
         .btn {
-            padding: 10px 20px;
-            font-size: 16px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
             border: none;
-            border-radius: 5px;
+            border-radius: var(--border-radius);
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         .btn-primary {
-            background-color: #3498db;
+            background-color: var(--primary-color);
             color: white;
         }
+
         .btn-primary:hover {
-            background-color: #2980b9;
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
+
         .btn-danger {
-            background-color: #e74c3c;
+            background-color: var(--danger-color);
             color: white;
         }
+
         .btn-danger:hover {
-            background-color: #c0392b;
+            background-color: #d90166;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
-        .status {
-            margin: 10px 0;
+
+        .btn-icon {
+            font-size: 1.1rem;
+        }
+
+        .status-bar {
+            background-color: var(--light-color);
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-left: 10px;
+            background-color: #ccc;
+        }
+
+        .status-indicator.connected {
+            background-color: var(--success-color);
+            box-shadow: 0 0 5px var(--success-color);
+        }
+
+        .status-indicator.disconnected {
+            background-color: var(--danger-color);
+            box-shadow: 0 0 5px var(--danger-color);
+        }
+
+        .status-indicator.waiting {
+            background-color: var(--warning-color);
+            box-shadow: 0 0 5px var(--warning-color);
+        }
+
+        /* Drawing area - initially hidden */
+        .drawing-area {
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+            transition: var(--transition);
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            justify-content: center;
+            padding: 15px;
+            background-color: var(--light-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .tool-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
             padding: 10px;
-            border-radius: 5px;
-            background-color: #ecf0f1;
+            border-radius: var(--border-radius);
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
+
+        .tool-group-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin-bottom: 5px;
+        }
+
+        .tools {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tool {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            background-color: white;
+            border: 2px solid #e9ecef;
+            color: var(--dark-color);
+        }
+
+        .tool:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-2px);
+        }
+
+        .tool.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .color-picker {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .color {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .color:hover {
+            transform: scale(1.2);
+        }
+
+        .color.active {
+            border: 2px solid var(--dark-color);
+            box-shadow: 0 0 0 2px white;
+        }
+
+        .brush-size {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brush-size label {
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .brush-size input {
+            width: 100px;
+        }
+
         .canvas-container {
             position: relative;
             width: 100%;
-            max-width: 800px;
             height: 500px;
-            border: 2px solid #3498db;
-            border-radius: 5px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
             background-color: white;
             margin: 0 auto;
-            overflow: hidden;
         }
+
         #drawingCanvas {
             position: absolute;
             top: 0;
@@ -79,134 +303,227 @@
             height: 100%;
             cursor: crosshair;
         }
-        .color-picker {
+
+        .game-controls {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            margin: 15px 0;
+            gap: 15px;
+            margin: 20px 0;
         }
-        .color {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: transform 0.2s;
-        }
-        .color:hover {
-            transform: scale(1.2);
-        }
-        .color.active {
-            border: 2px solid #2c3e50;
-        }
-        .brush-size {
-            margin: 10px 0;
-        }
+
         .waiting-screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.8);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             color: white;
-            z-index: 100;
+            z-index: 1000;
             display: none;
+            backdrop-filter: blur(5px);
         }
+
+        .waiting-content {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
         .spinner {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #3498db;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top: 5px solid var(--primary-color);
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             animation: spin 1s linear infinite;
-            margin-bottom: 20px;
+            margin: 0 auto 20px;
         }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        .tools {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 10px 0;
+
+        .waiting-screen h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
         }
-        .tool {
-            padding: 5px 10px;
-            border: 1px solid #bdc3c7;
-            border-radius: 3px;
-            cursor: pointer;
-            background-color: white;
+
+        .waiting-screen p {
+            margin-bottom: 20px;
+            opacity: 0.9;
         }
-        .tool.active {
-            background-color: #3498db;
-            color: white;
-        }
+
+        /* Responsive design */
         @media (max-width: 768px) {
+            .app-title {
+                font-size: 1.8rem;
+            }
+
+            .toolbar {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .tool-group {
+                width: 100%;
+            }
+
             .canvas-container {
                 height: 350px;
             }
+
             .game-controls {
                 flex-direction: column;
                 align-items: center;
             }
         }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .slide-up {
+            animation: slideUp 0.5s ease forwards;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>تطبيق الرسم الجماعي</h1>
-        
-        <div class="game-controls">
-            <button id="findPlayerBtn" class="btn btn-primary">البحث عن لاعب</button>
-            <button id="clearBtn" class="btn btn-danger">مسح اللوحة</button>
-            <button id="leaveBtn" class="btn btn-danger" disabled>مغادرة اللعبة</button>
+    <div class="app-container">
+        <header class="app-header">
+            <h1 class="app-title">تطبيق الرسم الجماعي</h1>
+            <p class="app-subtitle">ارسم وشارك إبداعاتك مع الآخرين في الوقت الحقيقي</p>
+        </header>
+
+        <!-- Welcome Screen - Initially visible -->
+        <div id="welcomeScreen" class="welcome-screen fade-in">
+            <div class="welcome-message slide-up">
+                <h2>مرحباً بك في تطبيق الرسم الجماعي</h2>
+                <p>هذا التطبيق يتيح لك الرسم مع أشخاص آخرين في نفس اللوحة وفي الوقت الحقيقي.</p>
+                <p>اضغط على زر "البحث عن لاعب" للبدء في تجربة الرسم المشترك.</p>
+            </div>
+            
+            <div class="status-bar">
+                <span class="status-indicator disconnected" id="statusIndicator"></span>
+                <span id="statusText">غير متصل. اضغط على "البحث عن لاعب" للبدء.</span>
+            </div>
+            
+            <button id="findPlayerBtn" class="btn btn-primary">
+                <i class="fas fa-search btn-icon"></i>
+                البحث عن لاعب
+            </button>
         </div>
-        
-        <div id="status" class="status">
-            غير متصل. اضغط على "البحث عن لاعب" للبدء.
-        </div>
-        
-        <div class="tools">
-            <div class="tool active" data-tool="brush">فرشاة</div>
-            <div class="tool" data-tool="eraser">ممحاة</div>
-        </div>
-        
-        <div class="color-picker">
-            <div class="color active" style="background-color: #000000;" data-color="#000000"></div>
-            <div class="color" style="background-color: #e74c3c;" data-color="#e74c3c"></div>
-            <div class="color" style="background-color: #3498db;" data-color="#3498db"></div>
-            <div class="color" style="background-color: #2ecc71;" data-color="#2ecc71"></div>
-            <div class="color" style="background-color: #f1c40f;" data-color="#f1c40f"></div>
-            <div class="color" style="background-color: #9b59b6;" data-color="#9b59b6"></div>
-        </div>
-        
-        <div class="brush-size">
-            <label for="brushSize">حجم الفرشاة: </label>
-            <input type="range" id="brushSize" min="1" max="20" value="5">
-            <span id="brushSizeValue">5</span>
-        </div>
-        
-        <div class="canvas-container">
-            <canvas id="drawingCanvas"></canvas>
+
+        <!-- Drawing Area - Initially hidden -->
+        <div id="drawingArea" class="drawing-area">
+            <div class="toolbar">
+                <div class="tool-group">
+                    <div class="tool-group-title">أدوات الرسم</div>
+                    <div class="tools">
+                        <div class="tool active" data-tool="brush" title="فرشاة">
+                            <i class="fas fa-paint-brush"></i>
+                        </div>
+                        <div class="tool" data-tool="eraser" title="ممحاة">
+                            <i class="fas fa-eraser"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tool-group">
+                    <div class="tool-group-title">الألوان</div>
+                    <div class="color-picker">
+                        <div class="color active" style="background-color: #000000;" data-color="#000000"></div>
+                        <div class="color" style="background-color: #e74c3c;" data-color="#e74c3c"></div>
+                        <div class="color" style="background-color: #3498db;" data-color="#3498db"></div>
+                        <div class="color" style="background-color: #2ecc71;" data-color="#2ecc71"></div>
+                        <div class="color" style="background-color: #f1c40f;" data-color="#f1c40f"></div>
+                        <div class="color" style="background-color: #9b59b6;" data-color="#9b59b6"></div>
+                        <div class="color" style="background-color: #e67e22;" data-color="#e67e22"></div>
+                        <div class="color" style="background-color: #1abc9c;" data-color="#1abc9c"></div>
+                    </div>
+                </div>
+                
+                <div class="tool-group">
+                    <div class="tool-group-title">حجم الفرشاة</div>
+                    <div class="brush-size">
+                        <label for="brushSize">الحجم: </label>
+                        <input type="range" id="brushSize" min="1" max="30" value="5">
+                        <span id="brushSizeValue">5</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="canvas-container">
+                <canvas id="drawingCanvas"></canvas>
+            </div>
+            
+            <div class="game-controls">
+                <button id="clearBtn" class="btn btn-danger">
+                    <i class="fas fa-trash-alt btn-icon"></i>
+                    مسح اللوحة
+                </button>
+                <button id="leaveBtn" class="btn btn-danger">
+                    <i class="fas fa-sign-out-alt btn-icon"></i>
+                    مغادرة اللعبة
+                </button>
+            </div>
+            
+            <div class="status-bar">
+                <span class="status-indicator connected" id="gameStatusIndicator"></span>
+                <span id="gameStatusText">متصل مع لاعب آخر. يمكنك البدء بالرسم الآن.</span>
+            </div>
         </div>
     </div>
     
     <div class="waiting-screen" id="waitingScreen">
-        <div class="spinner"></div>
-        <h2>جاري البحث عن لاعب...</h2>
-        <p>يرجى الانتظار</p>
-        <button id="cancelSearchBtn" class="btn btn-danger">إلغاء البحث</button>
+        <div class="waiting-content">
+            <div class="spinner"></div>
+            <h2>جاري البحث عن لاعب...</h2>
+            <p>يرجى الانتظار حتى يتم العثور على لاعب آخر</p>
+            <button id="cancelSearchBtn" class="btn btn-danger">
+                <i class="fas fa-times btn-icon"></i>
+                إلغاء البحث
+            </button>
+        </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // UI elements
+            const welcomeScreen = document.getElementById('welcomeScreen');
+            const drawingArea = document.getElementById('drawingArea');
+            const findPlayerBtn = document.getElementById('findPlayerBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const leaveBtn = document.getElementById('leaveBtn');
+            const statusText = document.getElementById('statusText');
+            const statusIndicator = document.getElementById('statusIndicator');
+            const gameStatusText = document.getElementById('gameStatusText');
+            const gameStatusIndicator = document.getElementById('gameStatusIndicator');
+            const waitingScreen = document.getElementById('waitingScreen');
+            const cancelSearchBtn = document.getElementById('cancelSearchBtn');
+            const brushSizeInput = document.getElementById('brushSize');
+            const brushSizeValue = document.getElementById('brushSizeValue');
+            
             // Canvas setup
             const canvas = document.getElementById('drawingCanvas');
             const ctx = canvas.getContext('2d');
@@ -217,9 +534,6 @@
                 canvas.width = container.clientWidth;
                 canvas.height = container.clientHeight;
             }
-            
-            resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
             
             // Drawing variables
             let isDrawing = false;
@@ -235,15 +549,9 @@
             let playerId = null;
             let isConnected = false;
             
-            // UI elements
-            const findPlayerBtn = document.getElementById('findPlayerBtn');
-            const clearBtn = document.getElementById('clearBtn');
-            const leaveBtn = document.getElementById('leaveBtn');
-            const statusDiv = document.getElementById('status');
-            const waitingScreen = document.getElementById('waitingScreen');
-            const cancelSearchBtn = document.getElementById('cancelSearchBtn');
-            const brushSizeInput = document.getElementById('brushSize');
-            const brushSizeValue = document.getElementById('brushSizeValue');
+            // Initialize canvas
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
             
             // Color picker
             const colorElements = document.querySelectorAll('.color');
@@ -401,7 +709,8 @@
                 if (isConnected) return;
                 
                 waitingScreen.style.display = 'flex';
-                statusDiv.textContent = 'جاري البحث عن لاعب...';
+                statusText.textContent = 'جاري البحث عن لاعب...';
+                statusIndicator.className = 'status-indicator waiting';
                 
                 socket.emit('find_player');
             });
@@ -409,7 +718,8 @@
             // Cancel search
             cancelSearchBtn.addEventListener('click', function() {
                 waitingScreen.style.display = 'none';
-                statusDiv.textContent = 'تم إلغاء البحث. اضغط على "البحث عن لاعب" للمحاولة مرة أخرى.';
+                statusText.textContent = 'تم إلغاء البحث. اضغط على "البحث عن لاعب" للمحاولة مرة أخرى.';
+                statusIndicator.className = 'status-indicator disconnected';
                 
                 socket.emit('cancel_search');
             });
@@ -427,29 +737,44 @@
                 isConnected = false;
                 roomId = null;
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                statusDiv.textContent = 'غير متصل. اضغط على "البحث عن لاعب" للبدء.';
+                
+                // Show welcome screen, hide drawing area
+                welcomeScreen.style.display = 'flex';
+                drawingArea.style.display = 'none';
+                
+                statusText.textContent = 'غير متصل. اضغط على "البحث عن لاعب" للبدء.';
+                statusIndicator.className = 'status-indicator disconnected';
+                
                 findPlayerBtn.disabled = false;
-                leaveBtn.disabled = true;
             }
             
             // Socket events
             socket.on('connect', function() {
                 playerId = socket.id;
-                statusDiv.textContent = 'متصل بالخادم. اضغط على "البحث عن لاعب" للبدء.';
+                statusText.textContent = 'متصل بالخادم. اضغط على "البحث عن لاعب" للبدء.';
+                statusIndicator.className = 'status-indicator connected';
             });
             
             socket.on('game_start', function(data) {
                 roomId = data.roomId;
                 isConnected = true;
                 waitingScreen.style.display = 'none';
-                statusDiv.textContent = 'تم العثور على لاعب! يمكنك البدء بالرسم الآن.';
-                findPlayerBtn.disabled = true;
-                leaveBtn.disabled = false;
+                
+                // Hide welcome screen, show drawing area
+                welcomeScreen.style.display = 'none';
+                drawingArea.style.display = 'flex';
+                drawingArea.classList.add('fade-in');
+                
+                gameStatusText.textContent = 'متصل مع لاعب آخر. يمكنك البدء بالرسم الآن.';
+                gameStatusIndicator.className = 'status-indicator connected';
+                
+                // Resize canvas after showing drawing area
+                setTimeout(resizeCanvas, 100);
             });
             
             socket.on('player_left', function() {
-                statusDiv.textContent = 'غادر اللاعب الآخر. اضغط على "البحث عن لاعب" للبدء من جديد.';
                 resetGame();
+                statusText.textContent = 'غادر اللاعب الآخر. اضغط على "البحث عن لاعب" للبدء من جديد.';
             });
             
             socket.on('draw_start', function(data) {
@@ -470,7 +795,8 @@
             
             socket.on('disconnect', function() {
                 resetGame();
-                statusDiv.textContent = 'انقطع الاتصال بالخادم. يرجى تحديث الصفحة.';
+                statusText.textContent = 'انقطع الاتصال بالخادم. يرجى تحديث الصفحة.';
+                statusIndicator.className = 'status-indicator disconnected';
             });
         });
     </script>
