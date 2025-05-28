@@ -6,6 +6,21 @@
     <title>تطبيق الرسم الجماعي</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root {
+            --primary-color: #4361ee;
+            --primary-dark: #3a0ca3;
+            --secondary-color: #7209b7;
+            --accent-color: #f72585;
+            --success-color: #4cc9f0;
+            --warning-color: #f8961e;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --gray-color: #6c757d;
+            --border-radius: 10px;
+            --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -14,25 +29,172 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #e9e9e9;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            color: var(--dark-color);
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 450px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .auth-header {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .auth-header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .auth-header p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .auth-tabs {
+            display: flex;
+            border-bottom: 1px solid #eee;
+        }
+
+        .auth-tab {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--gray-color);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .auth-tab.active {
+            color: var(--primary-color);
+        }
+
+        .auth-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary-color);
+        }
+
+        .auth-form {
+            padding: 25px;
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+            outline: none;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .auth-footer {
+            text-align: center;
+            padding: 15px;
+            border-top: 1px solid #eee;
+            color: var(--gray-color);
+            font-size: 0.9rem;
+        }
+
+        .auth-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
         }
 
         .welcome-screen {
-            display: flex;
+            display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 40px 20px;
             text-align: center;
             background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
             max-width: 500px;
             width: 100%;
         }
@@ -44,51 +206,37 @@
         .welcome-message h2 {
             font-size: 1.8rem;
             margin-bottom: 15px;
-            color: #333;
+            color: var(--dark-color);
+            font-weight: 700;
         }
 
         .welcome-message p {
             font-size: 1.1rem;
             line-height: 1.6;
-            color: #555;
+            color: var(--gray-color);
             margin-bottom: 15px;
-        }
-
-        .btn {
-            padding: 12px 24px;
-            font-size: 1rem;
-            font-weight: 600;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background-color: #4361ee;
-            color: white;
-        }
-
-        .btn:hover {
-            background-color: #3a0ca3;
-            transform: translateY(-2px);
         }
 
         .status-bar {
             margin: 15px 0;
-            padding: 10px;
-            background-color: #f8f9fa;
+            padding: 12px;
+            background-color: var(--light-color);
             border-radius: 5px;
             text-align: center;
             width: 100%;
+            font-weight: 500;
+            color: var(--dark-color);
         }
 
-        /* Drawing board styles - based on reference image */
+        /* Drawing board styles - based on reference image with enhancements */
         .drawing-board {
             display: none; /* Initially hidden */
             width: 100%;
             max-width: 1000px;
             aspect-ratio: 1 / 1;
-            background-color: #f5f5f5;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
             overflow: hidden;
             position: relative;
         }
@@ -97,20 +245,21 @@
             display: flex;
             align-items: center;
             padding: 15px;
-            background-color: #f5f5f5;
+            background: linear-gradient(to right, #f8f9fa, #e9ecef);
             border-bottom: 1px solid #e0e0e0;
         }
 
         .player-name {
             font-size: 1.5rem;
-            font-weight: 600;
-            color: #333;
+            font-weight: 700;
+            color: var(--dark-color);
             margin-right: auto;
             cursor: pointer;
+            transition: var(--transition);
         }
 
         .player-name:hover {
-            text-decoration: underline;
+            color: var(--primary-color);
         }
 
         .color-palette {
@@ -124,33 +273,39 @@
             height: 30px;
             border-radius: 50%;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s;
             border: 2px solid transparent;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         .color:hover {
-            transform: scale(1.1);
+            transform: scale(1.15);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
 
         .color.active {
-            border: 2px solid #333;
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px var(--dark-color);
         }
 
         .edit-name {
-            width: 30px;
-            height: 30px;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
             background-color: transparent;
             border: none;
             cursor: pointer;
-            color: #555;
+            color: var(--gray-color);
             font-size: 1.2rem;
+            border-radius: 50%;
+            transition: var(--transition);
         }
 
         .edit-name:hover {
-            color: #333;
+            color: var(--primary-color);
+            background-color: rgba(67, 97, 238, 0.1);
         }
 
         .drawing-area {
@@ -162,6 +317,7 @@
             flex: 1;
             background-color: white;
             position: relative;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
         }
 
         #drawingCanvas {
@@ -174,37 +330,42 @@
         }
 
         .tools-sidebar {
-            width: 60px;
-            background-color: #f5f5f5;
+            width: 70px;
+            background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 15px 0;
-            gap: 20px;
+            padding: 20px 0;
+            gap: 25px;
+            border-right: 1px solid #e0e0e0;
         }
 
         .tool {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: transparent;
+            background-color: white;
             border: none;
             cursor: pointer;
-            color: #555;
+            color: var(--gray-color);
             font-size: 1.2rem;
             transition: all 0.2s;
-            border-radius: 5px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
 
         .tool:hover {
-            background-color: #e0e0e0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            color: var(--primary-color);
         }
 
         .tool.active {
-            background-color: #e0e0e0;
-            color: #333;
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 8px rgba(67, 97, 238, 0.3);
         }
 
         .waiting-screen {
@@ -221,24 +382,26 @@
             color: white;
             z-index: 1000;
             display: none;
+            backdrop-filter: blur(5px);
         }
 
         .waiting-content {
             background-color: white;
-            color: #333;
+            color: var(--dark-color);
             padding: 30px;
-            border-radius: 10px;
+            border-radius: var(--border-radius);
             text-align: center;
             max-width: 400px;
             width: 90%;
+            box-shadow: var(--box-shadow);
         }
 
         .spinner {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #3498db;
+            border: 5px solid rgba(67, 97, 238, 0.1);
+            border-top: 5px solid var(--primary-color);
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             animation: spin 1s linear infinite;
             margin: 0 auto 20px;
         }
@@ -246,6 +409,17 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        .waiting-content h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--dark-color);
+        }
+
+        .waiting-content p {
+            margin-bottom: 20px;
+            color: var(--gray-color);
         }
 
         .name-edit-modal {
@@ -260,48 +434,100 @@
             align-items: center;
             z-index: 2000;
             display: none;
+            backdrop-filter: blur(3px);
         }
 
         .name-edit-content {
             background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            width: 300px;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            width: 350px;
+            box-shadow: var(--box-shadow);
         }
 
         .name-edit-content h3 {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             text-align: center;
+            color: var(--dark-color);
+            font-size: 1.5rem;
         }
 
         .name-edit-content input {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
+            padding: 12px 15px;
+            margin-bottom: 20px;
             border: 1px solid #ddd;
             border-radius: 5px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .name-edit-content input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+            outline: none;
         }
 
         .name-edit-buttons {
             display: flex;
             justify-content: space-between;
+            gap: 10px;
         }
 
         .name-edit-buttons button {
-            padding: 8px 15px;
+            flex: 1;
+            padding: 10px 15px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
         }
 
         .save-name {
-            background-color: #4361ee;
+            background-color: var(--primary-color);
             color: white;
+        }
+
+        .save-name:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
         }
 
         .cancel-name {
             background-color: #f8f9fa;
-            color: #333;
+            color: var(--gray-color);
+        }
+
+        .cancel-name:hover {
+            background-color: #e9ecef;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .slide-up {
+            animation: slideUp 0.5s ease forwards;
+        }
+
+        /* Error message styling */
+        .error-message {
+            color: var(--accent-color);
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
         }
 
         /* Responsive design */
@@ -318,11 +544,90 @@
                 margin-top: 10px;
                 margin-right: 0;
             }
+
+            .tools-sidebar {
+                width: 60px;
+                padding: 15px 0;
+                gap: 20px;
+            }
+
+            .tool {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Welcome Screen - Initially visible -->
+    <!-- Authentication Container - Initially visible -->
+    <div id="authContainer" class="auth-container">
+        <div class="auth-header">
+            <h1>تطبيق الرسم الجماعي</h1>
+            <p>سجل دخولك أو أنشئ حساباً جديداً للبدء</p>
+        </div>
+        
+        <div class="auth-tabs">
+            <div class="auth-tab active" data-tab="login">تسجيل الدخول</div>
+            <div class="auth-tab" data-tab="register">إنشاء حساب</div>
+        </div>
+        
+        <!-- Login Form -->
+        <div id="loginForm" class="auth-form active">
+            <div class="form-group">
+                <label for="loginEmail">البريد الإلكتروني</label>
+                <input type="email" id="loginEmail" class="form-control" placeholder="أدخل بريدك الإلكتروني">
+                <div class="error-message" id="loginEmailError"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="loginPassword">كلمة المرور</label>
+                <input type="password" id="loginPassword" class="form-control" placeholder="أدخل كلمة المرور">
+                <div class="error-message" id="loginPasswordError"></div>
+            </div>
+            
+            <button id="loginBtn" class="btn">تسجيل الدخول</button>
+            
+            <div class="auth-footer">
+                ليس لديك حساب؟ <a href="#" id="switchToRegister">إنشاء حساب جديد</a>
+            </div>
+        </div>
+        
+        <!-- Register Form -->
+        <div id="registerForm" class="auth-form">
+            <div class="form-group">
+                <label for="registerName">الاسم</label>
+                <input type="text" id="registerName" class="form-control" placeholder="أدخل اسمك">
+                <div class="error-message" id="registerNameError"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="registerEmail">البريد الإلكتروني</label>
+                <input type="email" id="registerEmail" class="form-control" placeholder="أدخل بريدك الإلكتروني">
+                <div class="error-message" id="registerEmailError"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="registerPassword">كلمة المرور</label>
+                <input type="password" id="registerPassword" class="form-control" placeholder="أدخل كلمة المرور">
+                <div class="error-message" id="registerPasswordError"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="registerConfirmPassword">تأكيد كلمة المرور</label>
+                <input type="password" id="registerConfirmPassword" class="form-control" placeholder="أعد إدخال كلمة المرور">
+                <div class="error-message" id="registerConfirmPasswordError"></div>
+            </div>
+            
+            <button id="registerBtn" class="btn">إنشاء حساب</button>
+            
+            <div class="auth-footer">
+                لديك حساب بالفعل؟ <a href="#" id="switchToLogin">تسجيل الدخول</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Welcome Screen - Hidden until login -->
     <div id="welcomeScreen" class="welcome-screen">
         <div class="welcome-message">
             <h2>مرحباً بك في تطبيق الرسم الجماعي</h2>
@@ -335,12 +640,13 @@
         </div>
         
         <button id="findPlayerBtn" class="btn">البحث عن لاعب</button>
+        <button id="logoutBtn" class="btn btn-outline" style="margin-top: 15px;">تسجيل الخروج</button>
     </div>
 
     <!-- Drawing Board - Initially hidden -->
     <div id="drawingBoard" class="drawing-board">
         <div class="board-header">
-            <div id="playerName" class="player-name">Player1984</div>
+            <div id="playerName" class="player-name">لاعب</div>
             
             <div class="color-palette">
                 <div class="color active" style="background-color: #333333;" data-color="#333333"></div>
@@ -358,10 +664,6 @@
         </div>
         
         <div class="drawing-area">
-            <div class="canvas-container">
-                <canvas id="drawingCanvas"></canvas>
-            </div>
-            
             <div class="tools-sidebar">
                 <button class="tool active" data-tool="brush" title="قلم">
                     <i class="fas fa-pen"></i>
@@ -384,6 +686,10 @@
                 <button id="leaveBtn" class="tool" title="مغادرة اللعبة">
                     <i class="fas fa-sign-out-alt"></i>
                 </button>
+            </div>
+            
+            <div class="canvas-container">
+                <canvas id="drawingCanvas"></canvas>
             </div>
         </div>
     </div>
@@ -413,7 +719,18 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // UI elements
+            // UI elements - Authentication
+            const authContainer = document.getElementById('authContainer');
+            const authTabs = document.querySelectorAll('.auth-tab');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const switchToRegister = document.getElementById('switchToRegister');
+            const switchToLogin = document.getElementById('switchToLogin');
+            const loginBtn = document.getElementById('loginBtn');
+            const registerBtn = document.getElementById('registerBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            
+            // UI elements - Drawing App
             const welcomeScreen = document.getElementById('welcomeScreen');
             const drawingBoard = document.getElementById('drawingBoard');
             const findPlayerBtn = document.getElementById('findPlayerBtn');
@@ -433,6 +750,9 @@
             const canvas = document.getElementById('drawingCanvas');
             const ctx = canvas.getContext('2d');
             const container = document.querySelector('.canvas-container');
+            
+            // User data
+            let currentUser = null;
             
             // Set canvas size to match container
             function resizeCanvas() {
@@ -459,6 +779,168 @@
             // Initialize canvas
             resizeCanvas();
             window.addEventListener('resize', resizeCanvas);
+            
+            // Authentication Tab Switching
+            authTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Update active tab
+                    authTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show corresponding form
+                    if (tabId === 'login') {
+                        loginForm.classList.add('active');
+                        registerForm.classList.remove('active');
+                    } else {
+                        loginForm.classList.remove('active');
+                        registerForm.classList.add('active');
+                    }
+                });
+            });
+            
+            // Switch between login and register forms
+            switchToRegister.addEventListener('click', function(e) {
+                e.preventDefault();
+                loginForm.classList.remove('active');
+                registerForm.classList.add('active');
+                authTabs[0].classList.remove('active');
+                authTabs[1].classList.add('active');
+            });
+            
+            switchToLogin.addEventListener('click', function(e) {
+                e.preventDefault();
+                registerForm.classList.remove('active');
+                loginForm.classList.add('active');
+                authTabs[1].classList.remove('active');
+                authTabs[0].classList.add('active');
+            });
+            
+            // Login functionality
+            loginBtn.addEventListener('click', function() {
+                const email = document.getElementById('loginEmail').value.trim();
+                const password = document.getElementById('loginPassword').value.trim();
+                
+                // Simple validation
+                let isValid = true;
+                
+                if (!email) {
+                    document.getElementById('loginEmailError').textContent = 'يرجى إدخال البريد الإلكتروني';
+                    document.getElementById('loginEmailError').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('loginEmailError').style.display = 'none';
+                }
+                
+                if (!password) {
+                    document.getElementById('loginPasswordError').textContent = 'يرجى إدخال كلمة المرور';
+                    document.getElementById('loginPasswordError').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('loginPasswordError').style.display = 'none';
+                }
+                
+                if (isValid) {
+                    // In a real app, you would verify credentials with a server
+                    // For this demo, we'll simulate a successful login
+                    currentUser = {
+                        email: email,
+                        name: email.split('@')[0] // Use part of email as name
+                    };
+                    
+                    // Update player name
+                    playerName.textContent = 'لاعب';
+                    
+                    // Show welcome screen
+                    authContainer.style.display = 'none';
+                    welcomeScreen.style.display = 'flex';
+                }
+            });
+            
+            // Registration functionality
+            registerBtn.addEventListener('click', function() {
+                const name = document.getElementById('registerName').value.trim();
+                const email = document.getElementById('registerEmail').value.trim();
+                const password = document.getElementById('registerPassword').value.trim();
+                const confirmPassword = document.getElementById('registerConfirmPassword').value.trim();
+                
+                // Simple validation
+                let isValid = true;
+                
+                if (!name) {
+                    document.getElementById('registerNameError').textContent = 'يرجى إدخال الاسم';
+                    document.getElementById('registerNameError').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('registerNameError').style.display = 'none';
+                }
+                
+                if (!email) {
+                    document.getElementById('registerEmailError').textContent = 'يرجى إدخال البريد الإلكتروني';
+                    document.getElementById('registerEmailError').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('registerEmailError').style.display = 'none';
+                }
+                
+                if (!password) {
+                    document.getElementById('registerPasswordError').textContent = 'يرجى إدخال كلمة المرور';
+                    document.getElementById('registerPasswordError').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('registerPasswordError').style.display = 'none';
+                }
+                
+                if (password !== confirmPassword) {
+                    document.getElementById('registerConfirmPasswordError').textContent = 'كلمات المرور غير متطابقة';
+                    document.getElementById('registerConfirmPasswordError').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('registerConfirmPasswordError').style.display = 'none';
+                }
+                
+                if (isValid) {
+                    // In a real app, you would send registration data to a server
+                    // For this demo, we'll simulate a successful registration
+                    currentUser = {
+                        name: name,
+                        email: email
+                    };
+                    
+                    // Update player name
+                    playerName.textContent = 'لاعب';
+                    
+                    // Show welcome screen
+                    authContainer.style.display = 'none';
+                    welcomeScreen.style.display = 'flex';
+                }
+            });
+            
+            // Logout functionality
+            logoutBtn.addEventListener('click', function() {
+                currentUser = null;
+                
+                // Reset forms
+                document.getElementById('loginEmail').value = '';
+                document.getElementById('loginPassword').value = '';
+                document.getElementById('registerName').value = '';
+                document.getElementById('registerEmail').value = '';
+                document.getElementById('registerPassword').value = '';
+                document.getElementById('registerConfirmPassword').value = '';
+                
+                // Hide error messages
+                document.querySelectorAll('.error-message').forEach(el => {
+                    el.style.display = 'none';
+                });
+                
+                // Show auth container
+                welcomeScreen.style.display = 'none';
+                authContainer.style.display = 'block';
+                
+                // Reset to login tab
+                authTabs[0].click();
+            });
             
             // Color picker
             const colorElements = document.querySelectorAll('.color');
