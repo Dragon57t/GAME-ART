@@ -530,6 +530,139 @@
             display: none;
         }
 
+        /* Toast notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            background-color: white;
+            color: var(--dark-color);
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            min-width: 300px;
+            max-width: 400px;
+            animation: slideIn 0.3s ease forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .toast.success {
+            border-right: 4px solid var(--success-color);
+        }
+
+        .toast.error {
+            border-right: 4px solid var(--accent-color);
+        }
+
+        .toast.warning {
+            border-right: 4px solid var(--warning-color);
+        }
+
+        .toast-icon {
+            margin-left: 15px;
+            font-size: 1.2rem;
+        }
+
+        .toast.success .toast-icon {
+            color: var(--success-color);
+        }
+
+        .toast.error .toast-icon {
+            color: var(--accent-color);
+        }
+
+        .toast.warning .toast-icon {
+            color: var(--warning-color);
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .toast-message {
+            font-size: 0.9rem;
+            color: var(--gray-color);
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--gray-color);
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 0;
+            margin-right: -10px;
+        }
+
+        .toast-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background-color: rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        .toast-progress-bar {
+            height: 100%;
+            width: 100%;
+            background-color: var(--primary-color);
+            animation: progress 5s linear forwards;
+        }
+
+        @keyframes progress {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(3px);
+            display: none;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(67, 97, 238, 0.1);
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
         /* Responsive design */
         @media (max-width: 768px) {
             .drawing-board {
@@ -560,6 +693,14 @@
     </style>
 </head>
 <body>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
     <!-- Authentication Container - Initially visible -->
     <div id="authContainer" class="auth-container">
         <div class="auth-header">
@@ -729,6 +870,7 @@
             const loginBtn = document.getElementById('loginBtn');
             const registerBtn = document.getElementById('registerBtn');
             const logoutBtn = document.getElementById('logoutBtn');
+            const loadingOverlay = document.getElementById('loadingOverlay');
             
             // UI elements - Drawing App
             const welcomeScreen = document.getElementById('welcomeScreen');
@@ -753,6 +895,7 @@
             
             // User data
             let currentUser = null;
+            let sessionToken = localStorage.getItem('sessionToken');
             
             // Set canvas size to match container
             function resizeCanvas() {
@@ -779,6 +922,76 @@
             // Initialize canvas
             resizeCanvas();
             window.addEventListener('resize', resizeCanvas);
+            
+            // Toast notification system
+            function showToast(type, title, message, duration = 5000) {
+                const toastContainer = document.getElementById('toastContainer');
+                
+                // Create toast element
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                
+                // Create toast content
+                let iconClass = 'fas fa-info-circle';
+                if (type === 'success') iconClass = 'fas fa-check-circle';
+                if (type === 'error') iconClass = 'fas fa-exclamation-circle';
+                if (type === 'warning') iconClass = 'fas fa-exclamation-triangle';
+                
+                toast.innerHTML = `
+                    <div class="toast-icon">
+                        <i class="${iconClass}"></i>
+                    </div>
+                    <div class="toast-content">
+                        <div class="toast-title">${title}</div>
+                        <div class="toast-message">${message}</div>
+                    </div>
+                    <button class="toast-close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="toast-progress">
+                        <div class="toast-progress-bar"></div>
+                    </div>
+                `;
+                
+                // Add toast to container
+                toastContainer.appendChild(toast);
+                
+                // Add close event
+                const closeBtn = toast.querySelector('.toast-close');
+                closeBtn.addEventListener('click', () => {
+                    toast.style.animation = 'slideOut 0.3s ease forwards';
+                    setTimeout(() => {
+                        toastContainer.removeChild(toast);
+                    }, 300);
+                });
+                
+                // Auto remove after duration
+                setTimeout(() => {
+                    if (toast.parentNode === toastContainer) {
+                        toast.style.animation = 'slideOut 0.3s ease forwards';
+                        setTimeout(() => {
+                            if (toast.parentNode === toastContainer) {
+                                toastContainer.removeChild(toast);
+                            }
+                        }, 300);
+                    }
+                }, duration);
+            }
+            
+            // Email validation function
+            function isValidEmail(email) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email);
+            }
+            
+            // Show/hide loading overlay
+            function showLoading() {
+                loadingOverlay.style.display = 'flex';
+            }
+            
+            function hideLoading() {
+                loadingOverlay.style.display = 'none';
+            }
             
             // Authentication Tab Switching
             authTabs.forEach(tab => {
@@ -829,6 +1042,10 @@
                     document.getElementById('loginEmailError').textContent = 'يرجى إدخال البريد الإلكتروني';
                     document.getElementById('loginEmailError').style.display = 'block';
                     isValid = false;
+                } else if (!isValidEmail(email)) {
+                    document.getElementById('loginEmailError').textContent = 'صيغة البريد الإلكتروني غير صحيحة';
+                    document.getElementById('loginEmailError').style.display = 'block';
+                    isValid = false;
                 } else {
                     document.getElementById('loginEmailError').style.display = 'none';
                 }
@@ -842,19 +1059,51 @@
                 }
                 
                 if (isValid) {
-                    // In a real app, you would verify credentials with a server
-                    // For this demo, we'll simulate a successful login
-                    currentUser = {
-                        email: email,
-                        name: email.split('@')[0] // Use part of email as name
-                    };
+                    // Show loading
+                    showLoading();
                     
-                    // Update player name
-                    playerName.textContent = 'لاعب';
-                    
-                    // Show welcome screen
-                    authContainer.style.display = 'none';
-                    welcomeScreen.style.display = 'flex';
+                    // Send login request to server
+                    fetch('/api/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ email, password })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        hideLoading();
+                        
+                        if (data.success) {
+                            // Save session token
+                            sessionToken = data.token;
+                            localStorage.setItem('sessionToken', sessionToken);
+                            
+                            // Save user data
+                            currentUser = data.user;
+                            
+                            // Update player name
+                            playerName.textContent = 'لاعب';
+                            
+                            // Authenticate socket
+                            socket.emit('authenticate', { token: sessionToken });
+                            
+                            // Show welcome screen
+                            authContainer.style.display = 'none';
+                            welcomeScreen.style.display = 'flex';
+                            
+                            // Show success toast
+                            showToast('success', 'تم تسجيل الدخول', 'تم تسجيل الدخول بنجاح، مرحباً بك!');
+                        } else {
+                            // Show error toast
+                            showToast('error', 'خطأ في تسجيل الدخول', data.message || 'حدث خطأ أثناء تسجيل الدخول');
+                        }
+                    })
+                    .catch(error => {
+                        hideLoading();
+                        console.error('Login error:', error);
+                        showToast('error', 'خطأ في الاتصال', 'حدث خطأ أثناء الاتصال بالخادم');
+                    });
                 }
             });
             
@@ -880,12 +1129,20 @@
                     document.getElementById('registerEmailError').textContent = 'يرجى إدخال البريد الإلكتروني';
                     document.getElementById('registerEmailError').style.display = 'block';
                     isValid = false;
+                } else if (!isValidEmail(email)) {
+                    document.getElementById('registerEmailError').textContent = 'صيغة البريد الإلكتروني غير صحيحة';
+                    document.getElementById('registerEmailError').style.display = 'block';
+                    isValid = false;
                 } else {
                     document.getElementById('registerEmailError').style.display = 'none';
                 }
                 
                 if (!password) {
                     document.getElementById('registerPasswordError').textContent = 'يرجى إدخال كلمة المرور';
+                    document.getElementById('registerPasswordError').style.display = 'block';
+                    isValid = false;
+                } else if (password.length < 6) {
+                    document.getElementById('registerPasswordError').textContent = 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
                     document.getElementById('registerPasswordError').style.display = 'block';
                     isValid = false;
                 } else {
@@ -901,46 +1158,170 @@
                 }
                 
                 if (isValid) {
-                    // In a real app, you would send registration data to a server
-                    // For this demo, we'll simulate a successful registration
-                    currentUser = {
-                        name: name,
-                        email: email
-                    };
+                    // Show loading
+                    showLoading();
                     
-                    // Update player name
-                    playerName.textContent = 'لاعب';
-                    
-                    // Show welcome screen
-                    authContainer.style.display = 'none';
-                    welcomeScreen.style.display = 'flex';
+                    // Send registration request to server
+                    fetch('/api/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ name, email, password })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        hideLoading();
+                        
+                        if (data.success) {
+                            // Save session token
+                            sessionToken = data.token;
+                            localStorage.setItem('sessionToken', sessionToken);
+                            
+                            // Save user data
+                            currentUser = data.user;
+                            
+                            // Update player name
+                            playerName.textContent = 'لاعب';
+                            
+                            // Authenticate socket
+                            socket.emit('authenticate', { token: sessionToken });
+                            
+                            // Show welcome screen
+                            authContainer.style.display = 'none';
+                            welcomeScreen.style.display = 'flex';
+                            
+                            // Show success toast
+                            showToast('success', 'تم إنشاء الحساب', 'تم إنشاء الحساب بنجاح، مرحباً بك!');
+                        } else {
+                            // Show error toast
+                            showToast('error', 'خطأ في إنشاء الحساب', data.message || 'حدث خطأ أثناء إنشاء الحساب');
+                        }
+                    })
+                    .catch(error => {
+                        hideLoading();
+                        console.error('Registration error:', error);
+                        showToast('error', 'خطأ في الاتصال', 'حدث خطأ أثناء الاتصال بالخادم');
+                    });
                 }
             });
             
             // Logout functionality
             logoutBtn.addEventListener('click', function() {
-                currentUser = null;
+                // Show loading
+                showLoading();
                 
-                // Reset forms
-                document.getElementById('loginEmail').value = '';
-                document.getElementById('loginPassword').value = '';
-                document.getElementById('registerName').value = '';
-                document.getElementById('registerEmail').value = '';
-                document.getElementById('registerPassword').value = '';
-                document.getElementById('registerConfirmPassword').value = '';
-                
-                // Hide error messages
-                document.querySelectorAll('.error-message').forEach(el => {
-                    el.style.display = 'none';
+                // Send logout request to server
+                fetch('/api/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ token: sessionToken })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    hideLoading();
+                    
+                    // Clear session data
+                    sessionToken = null;
+                    localStorage.removeItem('sessionToken');
+                    currentUser = null;
+                    
+                    // Reset forms
+                    document.getElementById('loginEmail').value = '';
+                    document.getElementById('loginPassword').value = '';
+                    document.getElementById('registerName').value = '';
+                    document.getElementById('registerEmail').value = '';
+                    document.getElementById('registerPassword').value = '';
+                    document.getElementById('registerConfirmPassword').value = '';
+                    
+                    // Hide error messages
+                    document.querySelectorAll('.error-message').forEach(el => {
+                        el.style.display = 'none';
+                    });
+                    
+                    // Show auth container
+                    welcomeScreen.style.display = 'none';
+                    authContainer.style.display = 'block';
+                    
+                    // Reset to login tab
+                    authTabs[0].click();
+                    
+                    // Show success toast
+                    showToast('success', 'تم تسجيل الخروج', 'تم تسجيل الخروج بنجاح');
+                })
+                .catch(error => {
+                    hideLoading();
+                    console.error('Logout error:', error);
+                    
+                    // Even if there's an error, we'll still log out locally
+                    sessionToken = null;
+                    localStorage.removeItem('sessionToken');
+                    currentUser = null;
+                    
+                    welcomeScreen.style.display = 'none';
+                    authContainer.style.display = 'block';
+                    
+                    showToast('warning', 'تم تسجيل الخروج', 'تم تسجيل الخروج محلياً، ولكن حدث خطأ في الاتصال بالخادم');
                 });
-                
-                // Show auth container
-                welcomeScreen.style.display = 'none';
-                authContainer.style.display = 'block';
-                
-                // Reset to login tab
-                authTabs[0].click();
             });
+            
+            // Check for existing session
+            function checkSession() {
+                if (sessionToken) {
+                    showLoading();
+                    
+                    fetch('/api/validate-session', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': sessionToken
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        hideLoading();
+                        
+                        if (data.success) {
+                            // Session is valid
+                            currentUser = data.user;
+                            
+                            // Update player name
+                            playerName.textContent = 'لاعب';
+                            
+                            // Authenticate socket
+                            socket.emit('authenticate', { token: sessionToken });
+                            
+                            // Show welcome screen
+                            authContainer.style.display = 'none';
+                            welcomeScreen.style.display = 'flex';
+                            
+                            showToast('success', 'مرحباً بعودتك', 'تم تسجيل دخولك تلقائياً');
+                        } else {
+                            // Session is invalid
+                            sessionToken = null;
+                            localStorage.removeItem('sessionToken');
+                            
+                            authContainer.style.display = 'block';
+                            welcomeScreen.style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        hideLoading();
+                        console.error('Session validation error:', error);
+                        
+                        // If there's an error, we'll assume the session is invalid
+                        sessionToken = null;
+                        localStorage.removeItem('sessionToken');
+                        
+                        authContainer.style.display = 'block';
+                        welcomeScreen.style.display = 'none';
+                    });
+                }
+            }
+            
+            // Check session on page load
+            checkSession();
             
             // Color picker
             const colorElements = document.querySelectorAll('.color');
@@ -1249,6 +1630,18 @@
             socket.on('connect', function() {
                 playerId = socket.id;
                 statusBar.textContent = 'متصل بالخادم. اضغط على "البحث عن لاعب" للبدء.';
+                
+                // Authenticate if we have a session token
+                if (sessionToken) {
+                    socket.emit('authenticate', { token: sessionToken });
+                }
+            });
+            
+            socket.on('authenticated', function(data) {
+                // Update player name if provided
+                if (data.name) {
+                    playerName.textContent = 'لاعب';
+                }
             });
             
             socket.on('game_start', function(data) {
@@ -1256,9 +1649,17 @@
                 isConnected = true;
                 waitingScreen.style.display = 'none';
                 
+                // Update player name if provided
+                if (data.playerName) {
+                    playerName.textContent = 'لاعب';
+                }
+                
                 // Hide welcome screen, show drawing board
                 welcomeScreen.style.display = 'none';
                 drawingBoard.style.display = 'block';
+                
+                // Show toast notification
+                showToast('success', 'بدأت اللعبة', 'تم العثور على لاعب آخر وبدأت اللعبة');
                 
                 // Resize canvas after showing drawing board
                 setTimeout(resizeCanvas, 100);
@@ -1267,6 +1668,14 @@
             socket.on('player_left', function() {
                 resetGame();
                 statusBar.textContent = 'غادر اللاعب الآخر. اضغط على "البحث عن لاعب" للبدء من جديد.';
+                
+                // Show toast notification
+                showToast('warning', 'غادر اللاعب', 'غادر اللاعب الآخر اللعبة');
+            });
+            
+            socket.on('opponent_updated_name', function(data) {
+                // This would be used in a more complex version with opponent name display
+                showToast('info', 'تغيير الاسم', 'قام اللاعب الآخر بتغيير اسمه');
             });
             
             socket.on('draw_start', function(data) {
@@ -1294,16 +1703,17 @@
             socket.on('clear_canvas', function() {
                 // Another player cleared the canvas
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-            });
-            
-            socket.on('update_name', function(data) {
-                // Another player updated their name
-                // This would be used in a more complex version with player identification
+                
+                // Show toast notification
+                showToast('info', 'مسح اللوحة', 'قام اللاعب الآخر بمسح اللوحة');
             });
             
             socket.on('disconnect', function() {
                 resetGame();
                 statusBar.textContent = 'انقطع الاتصال بالخادم. يرجى تحديث الصفحة.';
+                
+                // Show toast notification
+                showToast('error', 'انقطع الاتصال', 'انقطع الاتصال بالخادم، يرجى تحديث الصفحة');
             });
         });
     </script>
