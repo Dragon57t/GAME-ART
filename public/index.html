@@ -249,16 +249,42 @@
             border-bottom: 1px solid #e0e0e0;
         }
 
+        .player-info {
+            display: flex;
+            flex-direction: column;
+            margin-right: auto;
+        }
+
         .player-name {
             font-size: 1.5rem;
             font-weight: 700;
             color: var(--dark-color);
-            margin-right: auto;
             cursor: pointer;
             transition: var(--transition);
         }
 
         .player-name:hover {
+            color: var(--primary-color);
+        }
+
+        .opponent-info {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+            background-color: rgba(67, 97, 238, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+
+        .opponent-label {
+            font-size: 0.9rem;
+            color: var(--gray-color);
+            margin-left: 5px;
+        }
+
+        .opponent-name {
+            font-size: 1rem;
+            font-weight: 600;
             color: var(--primary-color);
         }
 
@@ -689,6 +715,11 @@
                 height: 40px;
                 font-size: 1.1rem;
             }
+            
+            .opponent-info {
+                margin-top: 10px;
+                margin-right: 0;
+            }
         }
     </style>
 </head>
@@ -787,7 +818,14 @@
     <!-- Drawing Board - Initially hidden -->
     <div id="drawingBoard" class="drawing-board">
         <div class="board-header">
-            <div id="playerName" class="player-name">لاعب</div>
+            <div class="player-info">
+                <div id="playerName" class="player-name">لاعب</div>
+            </div>
+            
+            <div class="opponent-info">
+                <span class="opponent-label">تلعب مع:</span>
+                <span id="opponentName" class="opponent-name">لاعب</span>
+            </div>
             
             <div class="color-palette">
                 <div class="color active" style="background-color: #333333;" data-color="#333333"></div>
@@ -882,6 +920,7 @@
             const waitingScreen = document.getElementById('waitingScreen');
             const cancelSearchBtn = document.getElementById('cancelSearchBtn');
             const playerName = document.getElementById('playerName');
+            const opponentName = document.getElementById('opponentName');
             const editNameBtn = document.getElementById('editNameBtn');
             const nameEditModal = document.getElementById('nameEditModal');
             const nameInput = document.getElementById('nameInput');
@@ -918,6 +957,7 @@
             let roomId = null;
             let playerId = null;
             let isConnected = false;
+            let currentOpponentName = 'لاعب';
             
             // Initialize canvas
             resizeCanvas();
@@ -1654,6 +1694,14 @@
                     playerName.textContent = 'لاعب';
                 }
                 
+                // Update opponent name if provided
+                if (data.opponentName) {
+                    currentOpponentName = data.opponentName;
+                    opponentName.textContent = currentOpponentName;
+                } else {
+                    opponentName.textContent = 'لاعب';
+                }
+                
                 // Hide welcome screen, show drawing board
                 welcomeScreen.style.display = 'none';
                 drawingBoard.style.display = 'block';
@@ -1674,8 +1722,14 @@
             });
             
             socket.on('opponent_updated_name', function(data) {
-                // This would be used in a more complex version with opponent name display
-                showToast('info', 'تغيير الاسم', 'قام اللاعب الآخر بتغيير اسمه');
+                // Update opponent name
+                if (data.name) {
+                    currentOpponentName = data.name;
+                    opponentName.textContent = currentOpponentName;
+                    
+                    // Show toast notification
+                    showToast('info', 'تغيير الاسم', 'قام اللاعب الآخر بتغيير اسمه');
+                }
             });
             
             socket.on('draw_start', function(data) {
