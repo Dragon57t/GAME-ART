@@ -1,7 +1,7 @@
 {
-  "name": "drawing-app",
+  "name": "drawing-animation-app",
   "version": "1.0.0",
-  "description": "تطبيق الرسم الجماعي مع نظام تسجيل دخول",
+  "description": "تطبيق الرسم والأنميشن الجماعي مع نظام تسجيل دخول",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -10,6 +10,10 @@
     "express": "^4.18.2",
     "socket.io": "^4.7.2",
     "body-parser": "^1.20.2"
+  },
+  "optionalDependencies": {
+    "canvas": "^2.11.2",
+    "gifencoder": "^2.0.1"
   },
   "author": "",
   "license": "ISC"
