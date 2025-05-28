@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق الرسم الجماعي</title>
+    <title>تطبيق الرسم والأنميشن الجماعي</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -228,17 +228,18 @@
             color: var(--dark-color);
         }
 
-        /* Drawing board styles - based on reference image with enhancements */
+        /* Drawing board styles */
         .drawing-board {
             display: none; /* Initially hidden */
             width: 100%;
             max-width: 1000px;
-            aspect-ratio: 1 / 1;
             background-color: #f8f9fa;
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
             overflow: hidden;
             position: relative;
+            display: flex;
+            flex-direction: column;
         }
 
         .board-header {
@@ -336,7 +337,8 @@
 
         .drawing-area {
             display: flex;
-            height: calc(100% - 60px);
+            flex: 1;
+            min-height: 500px; /* Ensure minimum height */
         }
 
         .canvas-container {
@@ -344,6 +346,9 @@
             background-color: white;
             position: relative;
             box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+            aspect-ratio: 1 / 1; /* Maintain aspect ratio */
+            max-width: 100%;
+            max-height: 100%;
         }
 
         #drawingCanvas {
@@ -353,6 +358,16 @@
             width: 100%;
             height: 100%;
             cursor: crosshair;
+        }
+
+        #onionSkinCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Don't interfere with drawing */
+            opacity: 0.5; /* Default opacity */
         }
 
         .tools-sidebar {
@@ -392,6 +407,123 @@
             background-color: var(--primary-color);
             color: white;
             box-shadow: 0 4px 8px rgba(67, 97, 238, 0.3);
+        }
+
+        /* Animation Mode Styles */
+        .animation-controls {
+            padding: 10px;
+            background-color: #e9ecef;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .animation-controls button,
+        .animation-controls select,
+        .animation-controls input {
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: white;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .animation-controls button:hover,
+        .animation-controls select:hover {
+            background-color: #f1f1f1;
+        }
+
+        .animation-controls button i {
+            margin-right: 5px;
+        }
+
+        .timeline-container {
+            padding: 10px;
+            background-color: #dee2e6;
+            border-top: 1px solid #ccc;
+            overflow-x: auto;
+            white-space: nowrap;
+            height: 100px; /* Adjust height as needed */
+        }
+
+        .frame-thumbnail {
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+            border: 2px solid var(--gray-color);
+            margin-right: 10px;
+            background-color: white;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .frame-thumbnail.active {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.3);
+        }
+
+        .frame-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .frame-number {
+            position: absolute;
+            top: 2px;
+            right: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+
+        .add-frame-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            border: 2px dashed var(--gray-color);
+            background-color: #f8f9fa;
+            color: var(--gray-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .add-frame-btn:hover {
+            background-color: #e9ecef;
+            color: var(--primary-color);
+        }
+
+        .mode-toggle-btn {
+            margin-top: 15px;
+        }
+
+        /* Hide animation elements by default */
+        .animation-controls,
+        .timeline-container {
+            display: none;
+        }
+
+        .drawing-board.animation-mode .animation-controls,
+        .drawing-board.animation-mode .timeline-container {
+            display: flex; /* Or block/flex depending on layout */
+        }
+
+        .drawing-board.animation-mode .drawing-area {
+            /* Adjust height if needed when timeline is visible */
+            height: calc(100% - 60px - 50px - 100px); /* Header - Anim Controls - Timeline */
         }
 
         .waiting-screen {
@@ -720,6 +852,32 @@
                 margin-top: 10px;
                 margin-right: 0;
             }
+
+            .animation-controls {
+                gap: 5px;
+            }
+
+            .animation-controls button,
+            .animation-controls select,
+            .animation-controls input {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+
+            .timeline-container {
+                height: 80px;
+            }
+
+            .frame-thumbnail {
+                width: 60px;
+                height: 60px;
+            }
+
+            .add-frame-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 1.2rem;
+            }
         }
     </style>
 </head>
@@ -735,7 +893,7 @@
     <!-- Authentication Container - Initially visible -->
     <div id="authContainer" class="auth-container">
         <div class="auth-header">
-            <h1>تطبيق الرسم الجماعي</h1>
+            <h1>تطبيق الرسم والأنميشن الجماعي</h1>
             <p>سجل دخولك أو أنشئ حساباً جديداً للبدء</p>
         </div>
         
@@ -802,9 +960,9 @@
     <!-- Welcome Screen - Hidden until login -->
     <div id="welcomeScreen" class="welcome-screen">
         <div class="welcome-message">
-            <h2>مرحباً بك في تطبيق الرسم الجماعي</h2>
-            <p>هذا التطبيق يتيح لك الرسم مع أشخاص آخرين في نفس اللوحة وفي الوقت الحقيقي.</p>
-            <p>اضغط على زر "البحث عن لاعب" للبدء في تجربة الرسم المشترك.</p>
+            <h2>مرحباً بك في تطبيق الرسم والأنميشن الجماعي</h2>
+            <p>هذا التطبيق يتيح لك الرسم أو إنشاء الرسوم المتحركة مع أشخاص آخرين في نفس الوقت الحقيقي.</p>
+            <p>اضغط على زر "البحث عن لاعب" للبدء في تجربة مشتركة.</p>
         </div>
         
         <div class="status-bar" id="statusBar">
@@ -840,6 +998,7 @@
             <button id="editNameBtn" class="edit-name">
                 <i class="fas fa-pencil-alt"></i>
             </button>
+            <button id="modeToggleBtn" class="btn btn-outline mode-toggle-btn" style="margin-right: 10px;">تبديل إلى الأنميشن</button>
         </div>
         
         <div class="drawing-area">
@@ -859,7 +1018,7 @@
                 <button class="tool" data-tool="line" title="خط">
                     <i class="fas fa-minus"></i>
                 </button>
-                <button id="clearBtn" class="tool" title="مسح اللوحة">
+                <button id="clearBtn" class="tool" title="مسح اللوحة/الإطار">
                     <i class="fas fa-trash-alt"></i>
                 </button>
                 <button id="leaveBtn" class="tool" title="مغادرة اللعبة">
@@ -868,8 +1027,35 @@
             </div>
             
             <div class="canvas-container">
+                <canvas id="onionSkinCanvas"></canvas> <!-- Canvas for onion skinning -->
                 <canvas id="drawingCanvas"></canvas>
             </div>
+        </div>
+
+        <!-- Animation Controls -->
+        <div class="animation-controls" id="animationControls">
+            <button id="animFirstFrameBtn" title="الإطار الأول"><i class="fas fa-fast-backward"></i></button>
+            <button id="animPrevFrameBtn" title="الإطار السابق"><i class="fas fa-step-backward"></i></button>
+            <button id="animPlayPauseBtn" title="تشغيل/إيقاف"><i class="fas fa-play"></i></button>
+            <button id="animNextFrameBtn" title="الإطار التالي"><i class="fas fa-step-forward"></i></button>
+            <button id="animLastFrameBtn" title="الإطار الأخير"><i class="fas fa-fast-forward"></i></button>
+            <span style="margin: 0 10px;">|</span>
+            <button id="animAddFrameBtn" title="إضافة إطار"><i class="fas fa-plus"></i> إضافة</button>
+            <button id="animDeleteFrameBtn" title="حذف الإطار"><i class="fas fa-trash"></i> حذف</button>
+            <button id="animCopyFrameBtn" title="نسخ الإطار"><i class="fas fa-copy"></i> نسخ</button>
+            <button id="animPasteFrameBtn" title="لصق الإطار"><i class="fas fa-paste"></i> لصق</button>
+            <span style="margin: 0 10px;">|</span>
+            <button id="animOnionSkinBtn" title="وضع البصل"><i class="fas fa-layer-group"></i> بصل</button>
+            <label for="animFpsInput" style="margin-right: 5px;">FPS:</label>
+            <input type="number" id="animFpsInput" value="12" min="1" max="60" style="width: 60px;">
+            <span style="margin: 0 10px;">|</span>
+            <button id="animExportBtn" title="تصدير الأنميشن"><i class="fas fa-download"></i> تصدير GIF</button>
+        </div>
+
+        <!-- Timeline Container -->
+        <div class="timeline-container" id="timelineContainer">
+            <!-- Frame thumbnails will be added here -->
+            <button class="add-frame-btn" id="timelineAddFrameBtn" title="إضافة إطار جديد"><i class="fas fa-plus"></i></button>
         </div>
     </div>
     
@@ -926,22 +1112,44 @@
             const nameInput = document.getElementById('nameInput');
             const saveNameBtn = document.getElementById('saveNameBtn');
             const cancelNameBtn = document.getElementById('cancelNameBtn');
+            const modeToggleBtn = document.getElementById('modeToggleBtn');
             
             // Canvas setup
             const canvas = document.getElementById('drawingCanvas');
             const ctx = canvas.getContext('2d');
+            const onionSkinCanvas = document.getElementById('onionSkinCanvas');
+            const onionCtx = onionSkinCanvas.getContext('2d');
             const container = document.querySelector('.canvas-container');
             
+            // UI elements - Animation Mode
+            const animationControls = document.getElementById('animationControls');
+            const timelineContainer = document.getElementById('timelineContainer');
+            const animFirstFrameBtn = document.getElementById('animFirstFrameBtn');
+            const animPrevFrameBtn = document.getElementById('animPrevFrameBtn');
+            const animPlayPauseBtn = document.getElementById('animPlayPauseBtn');
+            const animNextFrameBtn = document.getElementById('animNextFrameBtn');
+            const animLastFrameBtn = document.getElementById('animLastFrameBtn');
+            const animAddFrameBtn = document.getElementById('animAddFrameBtn');
+            const animDeleteFrameBtn = document.getElementById('animDeleteFrameBtn');
+            const animCopyFrameBtn = document.getElementById('animCopyFrameBtn');
+            const animPasteFrameBtn = document.getElementById('animPasteFrameBtn');
+            const animOnionSkinBtn = document.getElementById('animOnionSkinBtn');
+            const animFpsInput = document.getElementById('animFpsInput');
+            const animExportBtn = document.getElementById('animExportBtn');
+            const timelineAddFrameBtn = document.getElementById('timelineAddFrameBtn');
+
             // User data
             let currentUser = null;
             let sessionToken = localStorage.getItem('sessionToken');
             
-            // Set canvas size to match container
-            function resizeCanvas() {
-                canvas.width = container.clientWidth;
-                canvas.height = container.clientHeight;
-            }
-            
+            // Game state
+            let socket = io();
+            let playerId = null;
+            let roomId = null;
+            let isConnected = false;
+            let currentOpponentName = 'لاعب';
+            let currentMode = 'drawing'; // 'drawing' or 'animation'
+
             // Drawing variables
             let isDrawing = false;
             let lastX = 0;
@@ -951,57 +1159,69 @@
             let currentTool = 'brush';
             let shapeStartX = 0;
             let shapeStartY = 0;
-            
-            // Socket.io setup
-            const socket = io();
-            let roomId = null;
-            let playerId = null;
-            let isConnected = false;
-            let currentOpponentName = 'لاعب';
-            
-            // Initialize canvas
-            resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
-            
-            // Toast notification system
+
+            // Animation variables
+            let animationFrames = [];
+            let currentFrameIndex = 0;
+            let isPlaying = false;
+            let animationInterval = null;
+            let fps = 12;
+            let onionSkinEnabled = false;
+            let copiedFrameData = null;
+
+            // Set canvas size to match container
+            function resizeCanvas() {
+                const width = container.clientWidth;
+                const height = container.clientHeight;
+                canvas.width = width;
+                canvas.height = height;
+                onionSkinCanvas.width = width;
+                onionSkinCanvas.height = height;
+                // Redraw current frame after resize
+                if (currentMode === 'animation') {
+                    loadFrame(currentFrameIndex);
+                }
+            }
+
+            // Debounce resize
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(resizeCanvas, 100);
+            });
+
+            // Toast notification function
+            const toastContainer = document.getElementById('toastContainer');
             function showToast(type, title, message, duration = 5000) {
-                const toastContainer = document.getElementById('toastContainer');
-                
-                // Create toast element
                 const toast = document.createElement('div');
                 toast.className = `toast ${type}`;
                 
-                // Create toast content
-                let iconClass = 'fas fa-info-circle';
+                let iconClass = '';
                 if (type === 'success') iconClass = 'fas fa-check-circle';
-                if (type === 'error') iconClass = 'fas fa-exclamation-circle';
-                if (type === 'warning') iconClass = 'fas fa-exclamation-triangle';
+                else if (type === 'error') iconClass = 'fas fa-times-circle';
+                else if (type === 'warning') iconClass = 'fas fa-exclamation-triangle';
+                else iconClass = 'fas fa-info-circle';
                 
                 toast.innerHTML = `
-                    <div class="toast-icon">
-                        <i class="${iconClass}"></i>
-                    </div>
                     <div class="toast-content">
                         <div class="toast-title">${title}</div>
                         <div class="toast-message">${message}</div>
                     </div>
-                    <button class="toast-close">
-                        <i class="fas fa-times"></i>
-                    </button>
-                    <div class="toast-progress">
-                        <div class="toast-progress-bar"></div>
-                    </div>
+                    <i class="toast-icon ${iconClass}"></i>
+                    <button class="toast-close">&times;</button>
+                    <div class="toast-progress"><div class="toast-progress-bar"></div></div>
                 `;
                 
-                // Add toast to container
                 toastContainer.appendChild(toast);
                 
-                // Add close event
+                // Add close button functionality
                 const closeBtn = toast.querySelector('.toast-close');
                 closeBtn.addEventListener('click', () => {
                     toast.style.animation = 'slideOut 0.3s ease forwards';
                     setTimeout(() => {
-                        toastContainer.removeChild(toast);
+                        if (toast.parentNode === toastContainer) {
+                             toastContainer.removeChild(toast);
+                        }
                     }, 300);
                 });
                 
@@ -1122,8 +1342,8 @@
                             // Save user data
                             currentUser = data.user;
                             
-                            // Update player name
-                            playerName.textContent = 'لاعب';
+                            // Update player name display
+                            playerName.textContent = currentUser.name || 'لاعب';
                             
                             // Authenticate socket
                             socket.emit('authenticate', { token: sessionToken });
@@ -1221,8 +1441,8 @@
                             // Save user data
                             currentUser = data.user;
                             
-                            // Update player name
-                            playerName.textContent = 'لاعب';
+                            // Update player name display
+                            playerName.textContent = currentUser.name || 'لاعب';
                             
                             // Authenticate socket
                             socket.emit('authenticate', { token: sessionToken });
@@ -1326,8 +1546,8 @@
                             // Session is valid
                             currentUser = data.user;
                             
-                            // Update player name
-                            playerName.textContent = 'لاعب';
+                            // Update player name display
+                            playerName.textContent = currentUser.name || 'لاعب';
                             
                             // Authenticate socket
                             socket.emit('authenticate', { token: sessionToken });
@@ -1341,7 +1561,8 @@
                             // Session is invalid
                             sessionToken = null;
                             localStorage.removeItem('sessionToken');
-                            
+                            currentUser = null;
+                            // Show auth container (default state)
                             authContainer.style.display = 'block';
                             welcomeScreen.style.display = 'none';
                         }
@@ -1349,137 +1570,118 @@
                     .catch(error => {
                         hideLoading();
                         console.error('Session validation error:', error);
-                        
-                        // If there's an error, we'll assume the session is invalid
+                        // Assume session is invalid on error
                         sessionToken = null;
                         localStorage.removeItem('sessionToken');
-                        
+                        currentUser = null;
                         authContainer.style.display = 'block';
                         welcomeScreen.style.display = 'none';
                     });
+                } else {
+                    // No token, show auth container
+                    authContainer.style.display = 'block';
+                    welcomeScreen.style.display = 'none';
                 }
             }
-            
-            // Check session on page load
-            checkSession();
-            
-            // Color picker
-            const colorElements = document.querySelectorAll('.color');
-            colorElements.forEach(color => {
-                color.addEventListener('click', function() {
-                    // Remove active class from all colors
-                    colorElements.forEach(c => c.classList.remove('active'));
-                    // Add active class to selected color
-                    this.classList.add('active');
-                    // Set current color
-                    currentColor = this.getAttribute('data-color');
-                    
-                    // If using eraser, switch back to brush
-                    if (currentTool === 'eraser') {
-                        setTool('brush');
-                    }
-                });
-            });
-            
-            // Tool selection
-            const toolElements = document.querySelectorAll('.tool');
-            toolElements.forEach(tool => {
-                if (!tool.id) { // Skip buttons with IDs (clear, leave)
-                    tool.addEventListener('click', function() {
-                        setTool(this.getAttribute('data-tool'));
-                    });
+
+            // Mode Toggling
+            modeToggleBtn.addEventListener('click', () => {
+                if (currentMode === 'drawing') {
+                    switchToAnimationMode();
+                } else {
+                    switchToDrawingMode();
                 }
             });
-            
-            function setTool(tool) {
-                currentTool = tool;
-                toolElements.forEach(t => {
-                    if (!t.id) { // Skip buttons with IDs (clear, leave)
-                        t.classList.remove('active');
-                        if (t.getAttribute('data-tool') === tool) {
-                            t.classList.add('active');
-                        }
-                    }
-                });
+
+            function switchToAnimationMode() {
+                currentMode = 'animation';
+                drawingBoard.classList.add('animation-mode');
+                modeToggleBtn.textContent = 'تبديل إلى الرسم';
+                clearBtn.title = 'مسح الإطار';
+                // Initialize animation if needed
+                if (animationFrames.length === 0) {
+                    addFrame(true); // Add initial frame
+                } else {
+                    loadFrame(currentFrameIndex);
+                }
+                // Request full animation state from server
+                socket.emit('animation_sync_request', { roomId });
             }
-            
+
+            function switchToDrawingMode() {
+                currentMode = 'drawing';
+                drawingBoard.classList.remove('animation-mode');
+                modeToggleBtn.textContent = 'تبديل إلى الأنميشن';
+                clearBtn.title = 'مسح اللوحة';
+                // Clear canvas or load drawing state if needed
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                onionCtx.clearRect(0, 0, onionSkinCanvas.width, onionSkinCanvas.height);
+                // TODO: Need to handle saving/loading drawing state if switching back and forth
+            }
+
             // Drawing functions
             function startDrawing(e) {
-                if (!isConnected) return;
-                
                 isDrawing = true;
                 [lastX, lastY] = getMousePos(canvas, e);
-                
-                if (currentTool === 'circle' || currentTool === 'rectangle' || currentTool === 'line') {
-                    shapeStartX = lastX;
-                    shapeStartY = lastY;
-                } else {
-                    // Emit drawing start for brush and eraser
+                shapeStartX = lastX;
+                shapeStartY = lastY;
+
+                // Emit draw start for current frame in animation mode
+                if (isConnected && currentMode === 'animation') {
                     socket.emit('draw_start', {
+                        roomId: roomId,
                         x: lastX,
                         y: lastY,
-                        color: currentTool === 'eraser' ? '#FFFFFF' : currentColor,
+                        color: currentColor,
                         size: brushSize,
                         tool: currentTool,
-                        roomId: roomId
+                        frameIndex: currentFrameIndex
                     });
+                } else if (isConnected && currentMode === 'drawing') {
+                    // TODO: Handle drawing mode sync if needed separately
                 }
             }
-            
+
             function draw(e) {
-                if (!isDrawing || !isConnected) return;
+                if (!isDrawing) return;
+                
+                const [currentX, currentY] = getMousePos(canvas, e);
+                
+                if (currentTool === 'brush' || currentTool === 'eraser') {
+                    drawLine(lastX, lastY, currentX, currentY, currentColor, brushSize, currentTool);
+                    
+                    // Emit draw move for current frame in animation mode
+                    if (isConnected && currentMode === 'animation') {
+                        socket.emit('draw_move', {
+                            roomId: roomId,
+                            x0: lastX,
+                            y0: lastY,
+                            x1: currentX,
+                            y1: currentY,
+                            color: currentColor,
+                            size: brushSize,
+                            tool: currentTool,
+                            frameIndex: currentFrameIndex
+                        });
+                    } else if (isConnected && currentMode === 'drawing') {
+                         // TODO: Handle drawing mode sync if needed separately
+                    }
+                }
+                
+                lastX = currentX;
+                lastY = currentY;
+            }
+
+            function stopDrawing(e) {
+                if (!isDrawing) return;
                 
                 const [x, y] = getMousePos(canvas, e);
                 
-                if (currentTool === 'brush' || currentTool === 'eraser') {
-                    // Draw line
-                    drawLine(lastX, lastY, x, y, currentTool === 'eraser' ? '#FFFFFF' : currentColor, brushSize, currentTool);
+                if (currentTool === 'circle') {
+                    const radius = Math.sqrt(Math.pow(x - shapeStartX, 2) + Math.pow(y - shapeStartY, 2));
+                    drawCircle(shapeStartX, shapeStartY, radius, currentColor, brushSize);
                     
-                    // Emit drawing
-                    socket.emit('draw_move', {
-                        x0: lastX,
-                        y0: lastY,
-                        x1: x,
-                        y1: y,
-                        color: currentTool === 'eraser' ? '#FFFFFF' : currentColor,
-                        size: brushSize,
-                        tool: currentTool,
-                        roomId: roomId
-                    });
-                    
-                    [lastX, lastY] = [x, y];
-                } else if (currentTool === 'circle' || currentTool === 'rectangle' || currentTool === 'line') {
-                    // For shapes, we'll preview them as the user drags
-                    // Clear the canvas (or use a temporary canvas for preview)
-                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    
-                    if (currentTool === 'circle') {
-                        const radius = Math.sqrt(Math.pow(x - shapeStartX, 2) + Math.pow(y - shapeStartY, 2));
-                        drawCircle(shapeStartX, shapeStartY, radius, currentColor, brushSize);
-                    } else if (currentTool === 'rectangle') {
-                        drawRectangle(shapeStartX, shapeStartY, x - shapeStartX, y - shapeStartY, currentColor, brushSize);
-                    } else if (currentTool === 'line') {
-                        drawLine(shapeStartX, shapeStartY, x, y, currentColor, brushSize, 'brush');
-                    }
-                    
-                    // Restore the original image data after a short delay
-                    setTimeout(() => {
-                        ctx.putImageData(imageData, 0, 0);
-                    }, 50);
-                }
-            }
-            
-            function stopDrawing(e) {
-                if (!isDrawing || !isConnected) return;
-                
-                if (currentTool === 'circle' || currentTool === 'rectangle' || currentTool === 'line') {
-                    const [x, y] = getMousePos(canvas, e);
-                    
-                    if (currentTool === 'circle') {
-                        const radius = Math.sqrt(Math.pow(x - shapeStartX, 2) + Math.pow(y - shapeStartY, 2));
-                        drawCircle(shapeStartX, shapeStartY, radius, currentColor, brushSize);
-                        
-                        // Emit circle drawing
+                    if (isConnected && currentMode === 'animation') {
                         socket.emit('draw_shape', {
                             type: 'circle',
                             x: shapeStartX,
@@ -1487,12 +1689,14 @@
                             radius: radius,
                             color: currentColor,
                             size: brushSize,
-                            roomId: roomId
+                            roomId: roomId,
+                            frameIndex: currentFrameIndex
                         });
-                    } else if (currentTool === 'rectangle') {
-                        drawRectangle(shapeStartX, shapeStartY, x - shapeStartX, y - shapeStartY, currentColor, brushSize);
-                        
-                        // Emit rectangle drawing
+                    }
+                } else if (currentTool === 'rectangle') {
+                    drawRectangle(shapeStartX, shapeStartY, x - shapeStartX, y - shapeStartY, currentColor, brushSize);
+                    
+                    if (isConnected && currentMode === 'animation') {
                         socket.emit('draw_shape', {
                             type: 'rectangle',
                             x: shapeStartX,
@@ -1501,12 +1705,14 @@
                             height: y - shapeStartY,
                             color: currentColor,
                             size: brushSize,
-                            roomId: roomId
+                            roomId: roomId,
+                            frameIndex: currentFrameIndex
                         });
-                    } else if (currentTool === 'line') {
-                        drawLine(shapeStartX, shapeStartY, x, y, currentColor, brushSize, 'brush');
-                        
-                        // Emit line drawing
+                    }
+                } else if (currentTool === 'line') {
+                    drawLine(shapeStartX, shapeStartY, x, y, currentColor, brushSize, 'brush');
+                    
+                    if (isConnected && currentMode === 'animation') {
                         socket.emit('draw_shape', {
                             type: 'line',
                             x0: shapeStartX,
@@ -1515,15 +1721,20 @@
                             y1: y,
                             color: currentColor,
                             size: brushSize,
-                            roomId: roomId
+                            roomId: roomId,
+                            frameIndex: currentFrameIndex
                         });
                     }
                 }
                 
                 isDrawing = false;
                 
-                // Emit drawing end
-                socket.emit('draw_end', { roomId: roomId });
+                // Save frame data after drawing stops in animation mode
+                if (currentMode === 'animation') {
+                    saveCurrentFrame();
+                    // Emit drawing end
+                    socket.emit('draw_end', { roomId: roomId, frameIndex: currentFrameIndex });
+                }
             }
             
             function drawLine(x0, y0, x1, y1, color, size, tool) {
@@ -1542,6 +1753,8 @@
                 }
                 
                 ctx.stroke();
+                // Reset composite operation for future shapes
+                ctx.globalCompositeOperation = 'source-over'; 
             }
             
             function drawCircle(x, y, radius, color, size) {
@@ -1566,7 +1779,7 @@
                 const scaleX = canvas.width / rect.width;
                 const scaleY = canvas.height / rect.height;
                 
-                if (evt.touches) {
+                if (evt.touches && evt.touches.length > 0) {
                     // Touch event
                     return [
                         (evt.touches[0].clientX - rect.left) * scaleX,
@@ -1598,12 +1811,18 @@
             });
             canvas.addEventListener('touchend', stopDrawing);
             
-            // Clear canvas
+            // Clear canvas / frame
             clearBtn.addEventListener('click', function() {
                 if (!isConnected) return;
                 
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                socket.emit('clear_canvas', { roomId: roomId });
+                if (currentMode === 'animation') {
+                    saveCurrentFrame();
+                    socket.emit('clear_canvas', { roomId: roomId, frameIndex: currentFrameIndex });
+                } else {
+                    // TODO: Handle clear in drawing mode
+                    // socket.emit('clear_canvas', { roomId: roomId });
+                }
             });
             
             // Find player
@@ -1641,8 +1860,9 @@
             // Save player name
             saveNameBtn.addEventListener('click', function() {
                 const newName = nameInput.value.trim();
-                if (newName) {
+                if (newName && currentUser) {
                     playerName.textContent = newName;
+                    currentUser.name = newName; // Update local user object
                     socket.emit('update_name', { name: newName, roomId: roomId });
                 }
                 nameEditModal.style.display = 'none';
@@ -1658,29 +1878,382 @@
                 isConnected = false;
                 roomId = null;
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
+                onionCtx.clearRect(0, 0, onionSkinCanvas.width, onionSkinCanvas.height);
                 
+                // Reset animation state
+                animationFrames = [];
+                currentFrameIndex = 0;
+                isPlaying = false;
+                stopAnimation();
+                onionSkinEnabled = false;
+                copiedFrameData = null;
+                updateTimeline();
+                switchToDrawingMode(); // Default to drawing mode
+
                 // Show welcome screen, hide drawing board
                 welcomeScreen.style.display = 'flex';
                 drawingBoard.style.display = 'none';
                 
                 statusBar.textContent = 'غير متصل. اضغط على "البحث عن لاعب" للبدء.';
             }
+
+            // Tool selection
+            document.querySelectorAll('.tool').forEach(toolBtn => {
+                toolBtn.addEventListener('click', function() {
+                    if (this.id === 'clearBtn' || this.id === 'leaveBtn') return; // Handled separately
+                    
+                    document.querySelectorAll('.tool.active').forEach(activeBtn => activeBtn.classList.remove('active'));
+                    this.classList.add('active');
+                    currentTool = this.getAttribute('data-tool');
+                });
+            });
+
+            // Color selection
+            document.querySelectorAll('.color').forEach(colorBtn => {
+                colorBtn.addEventListener('click', function() {
+                    document.querySelectorAll('.color.active').forEach(activeBtn => activeBtn.classList.remove('active'));
+                    this.classList.add('active');
+                    currentColor = this.getAttribute('data-color');
+                });
+            });
+
+            // --- Animation Mode Logic ---
+
+            function addFrame(isInitial = false, index = -1) {
+                const newFrameData = canvas.toDataURL(); // Use current canvas as base or blank?
+                const frameId = `frame_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+                const insertIndex = (index === -1) ? animationFrames.length : index;
+
+                const newFrame = {
+                    id: frameId,
+                    index: insertIndex,
+                    imageData: isInitial ? createBlankFrameData() : newFrameData, // Start with blank frame
+                    timestamp: Date.now()
+                };
+
+                // Insert locally first for responsiveness
+                animationFrames.splice(insertIndex, 0, newFrame);
+                // Update indices of subsequent frames
+                for (let i = insertIndex + 1; i < animationFrames.length; i++) {
+                    animationFrames[i].index = i;
+                }
+
+                // Emit to server
+                socket.emit('frame_add', {
+                    roomId: roomId,
+                    index: insertIndex,
+                    imageData: newFrame.imageData
+                });
+
+                // Switch to the new frame
+                setCurrentFrame(insertIndex);
+                updateTimeline();
+            }
+
+            function deleteFrame(index) {
+                if (animationFrames.length <= 1) {
+                    showToast('warning', 'لا يمكن الحذف', 'يجب أن يكون هناك إطار واحد على الأقل.');
+                    return;
+                }
+                if (index < 0 || index >= animationFrames.length) return;
+
+                const frameIdToDelete = animationFrames[index].id;
+
+                // Remove locally
+                animationFrames.splice(index, 1);
+                // Update indices
+                for (let i = index; i < animationFrames.length; i++) {
+                    animationFrames[i].index = i;
+                }
+
+                // Emit to server
+                socket.emit('frame_delete', { roomId: roomId, frameId: frameIdToDelete });
+
+                // Adjust current frame index if necessary
+                if (currentFrameIndex >= animationFrames.length) {
+                    currentFrameIndex = animationFrames.length - 1;
+                }
+                setCurrentFrame(currentFrameIndex);
+                updateTimeline();
+            }
+
+            function copyFrame(index) {
+                if (index < 0 || index >= animationFrames.length) return;
+                copiedFrameData = animationFrames[index].imageData;
+                showToast('success', 'تم النسخ', `تم نسخ الإطار ${index + 1}`);
+            }
+
+            function pasteFrame(index) {
+                if (!copiedFrameData) {
+                    showToast('warning', 'لا يوجد إطار منسوخ', 'قم بنسخ إطار أولاً.');
+                    return;
+                }
+                const insertIndex = (index === -1) ? animationFrames.length : index;
+                const frameId = `frame_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+
+                const newFrame = {
+                    id: frameId,
+                    index: insertIndex,
+                    imageData: copiedFrameData,
+                    timestamp: Date.now()
+                };
+
+                // Insert locally
+                animationFrames.splice(insertIndex, 0, newFrame);
+                for (let i = insertIndex + 1; i < animationFrames.length; i++) {
+                    animationFrames[i].index = i;
+                }
+
+                // Emit to server
+                socket.emit('frame_add', {
+                    roomId: roomId,
+                    index: insertIndex,
+                    imageData: newFrame.imageData // Send the pasted data
+                });
+
+                setCurrentFrame(insertIndex);
+                updateTimeline();
+            }
+
+            function setCurrentFrame(index) {
+                if (index < 0 || index >= animationFrames.length) return;
+                currentFrameIndex = index;
+                loadFrame(currentFrameIndex);
+                updateTimeline(); // Highlight active frame
+                // Notify server about frame change
+                socket.emit('animation_set_frame', { roomId: roomId, frameIndex: currentFrameIndex });
+            }
+
+            function loadFrame(index) {
+                if (index < 0 || index >= animationFrames.length) return;
+                
+                const frameData = animationFrames[index].imageData;
+                const img = new Image();
+                img.onload = () => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    // Draw onion skin if enabled
+                    drawOnionSkin();
+                };
+                img.onerror = () => {
+                    console.error(`Error loading image data for frame ${index}`);
+                    // Draw blank if error
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    drawOnionSkin();
+                }
+                img.src = frameData;
+            }
+
+            function saveCurrentFrame() {
+                if (currentFrameIndex < 0 || currentFrameIndex >= animationFrames.length) return;
+                
+                const currentFrame = animationFrames[currentFrameIndex];
+                currentFrame.imageData = canvas.toDataURL();
+                currentFrame.timestamp = Date.now();
+
+                // Update thumbnail
+                updateTimeline(); 
+
+                // Emit update to server
+                socket.emit('frame_update', {
+                    roomId: roomId,
+                    frameId: currentFrame.id,
+                    imageData: currentFrame.imageData
+                });
+            }
+
+            function createBlankFrameData() {
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = canvas.width;
+                tempCanvas.height = canvas.height;
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCtx.fillStyle = 'white'; // Or transparent?
+                tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+                return tempCanvas.toDataURL();
+            }
+
+            function updateTimeline() {
+                // Clear existing thumbnails except the add button
+                const existingThumbnails = timelineContainer.querySelectorAll('.frame-thumbnail');
+                existingThumbnails.forEach(thumb => thumb.remove());
+
+                animationFrames.forEach((frame, index) => {
+                    const thumbnail = document.createElement('div');
+                    thumbnail.className = 'frame-thumbnail';
+                    thumbnail.dataset.index = index;
+                    if (index === currentFrameIndex) {
+                        thumbnail.classList.add('active');
+                    }
+
+                    const img = document.createElement('img');
+                    img.src = frame.imageData;
+                    img.alt = `الإطار ${index + 1}`;
+
+                    const frameNumber = document.createElement('span');
+                    frameNumber.className = 'frame-number';
+                    frameNumber.textContent = index + 1;
+
+                    thumbnail.appendChild(img);
+                    thumbnail.appendChild(frameNumber);
+
+                    thumbnail.addEventListener('click', () => {
+                        setCurrentFrame(index);
+                    });
+
+                    // Insert before the add button
+                    timelineContainer.insertBefore(thumbnail, timelineAddFrameBtn);
+                });
+            }
+
+            function playAnimation() {
+                if (isPlaying || animationFrames.length < 2) return;
+                isPlaying = true;
+                animPlayPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                animPlayPauseBtn.title = 'إيقاف';
+
+                socket.emit('animation_play', { roomId: roomId });
+
+                let frameCounter = currentFrameIndex;
+                animationInterval = setInterval(() => {
+                    frameCounter = (frameCounter + 1) % animationFrames.length;
+                    setCurrentFrame(frameCounter);
+                }, 1000 / fps);
+            }
+
+            function pauseAnimation() {
+                if (!isPlaying) return;
+                isPlaying = false;
+                animPlayPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                animPlayPauseBtn.title = 'تشغيل';
+                clearInterval(animationInterval);
+                animationInterval = null;
+                socket.emit('animation_pause', { roomId: roomId });
+            }
+
+            function stopAnimation() {
+                pauseAnimation();
+                // Optionally reset to frame 0
+                // setCurrentFrame(0);
+            }
+
+            function toggleOnionSkin() {
+                onionSkinEnabled = !onionSkinEnabled;
+                animOnionSkinBtn.classList.toggle('active', onionSkinEnabled);
+                if (onionSkinEnabled) {
+                    drawOnionSkin();
+                } else {
+                    onionCtx.clearRect(0, 0, onionSkinCanvas.width, onionSkinCanvas.height);
+                }
+            }
+
+            function drawOnionSkin() {
+                onionCtx.clearRect(0, 0, onionSkinCanvas.width, onionSkinCanvas.height);
+                if (!onionSkinEnabled || currentMode !== 'animation') return;
+
+                // Draw previous frame (adjust number of frames as needed)
+                if (currentFrameIndex > 0) {
+                    const prevFrameData = animationFrames[currentFrameIndex - 1].imageData;
+                    const imgPrev = new Image();
+                    imgPrev.onload = () => {
+                        onionCtx.globalAlpha = 0.3; // Adjust transparency
+                        onionCtx.drawImage(imgPrev, 0, 0, onionSkinCanvas.width, onionSkinCanvas.height);
+                        onionCtx.globalAlpha = 1.0; // Reset alpha
+                    };
+                    imgPrev.src = prevFrameData;
+                }
+
+                // Draw next frame (optional)
+                // if (currentFrameIndex < animationFrames.length - 1) { ... }
+            }
+
+            function exportAnimation() {
+                if (animationFrames.length === 0) {
+                    showToast('warning', 'لا يوجد إطارات', 'لا يمكن التصدير بدون إطارات.');
+                    return;
+                }
+                showLoading();
+                fetch('/api/animation/export', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': sessionToken
+                    },
+                    body: JSON.stringify({ 
+                        frames: animationFrames, 
+                        fps: fps, 
+                        format: 'gif' 
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    hideLoading();
+                    if (data.success && data.url) {
+                        showToast('success', 'تم التصدير', 'تم تصدير الأنميشن بنجاح.');
+                        // Open the exported GIF in a new tab or provide a download link
+                        window.open(data.url, '_blank');
+                    } else {
+                        showToast('error', 'خطأ في التصدير', data.message || 'حدث خطأ أثناء التصدير.');
+                    }
+                })
+                .catch(error => {
+                    hideLoading();
+                    console.error('Export error:', error);
+                    showToast('error', 'خطأ في الاتصال', 'حدث خطأ أثناء الاتصال بالخادم للتصدير.');
+                });
+            }
+
+            // Animation Control Event Listeners
+            animFirstFrameBtn.addEventListener('click', () => setCurrentFrame(0));
+            animPrevFrameBtn.addEventListener('click', () => setCurrentFrame(Math.max(0, currentFrameIndex - 1)));
+            animPlayPauseBtn.addEventListener('click', () => {
+                if (isPlaying) {
+                    pauseAnimation();
+                } else {
+                    playAnimation();
+                }
+            });
+            animNextFrameBtn.addEventListener('click', () => setCurrentFrame(Math.min(animationFrames.length - 1, currentFrameIndex + 1)));
+            animLastFrameBtn.addEventListener('click', () => setCurrentFrame(animationFrames.length - 1));
+            animAddFrameBtn.addEventListener('click', () => addFrame(false, currentFrameIndex + 1));
+            timelineAddFrameBtn.addEventListener('click', () => addFrame(false)); // Add at the end
+            animDeleteFrameBtn.addEventListener('click', () => deleteFrame(currentFrameIndex));
+            animCopyFrameBtn.addEventListener('click', () => copyFrame(currentFrameIndex));
+            animPasteFrameBtn.addEventListener('click', () => pasteFrame(currentFrameIndex + 1));
+            animOnionSkinBtn.addEventListener('click', toggleOnionSkin);
+            animFpsInput.addEventListener('change', (e) => {
+                const newFps = parseInt(e.target.value, 10);
+                if (!isNaN(newFps) && newFps > 0) {
+                    fps = newFps;
+                    if (isPlaying) { // Restart animation with new speed
+                        pauseAnimation();
+                        playAnimation();
+                    }
+                    socket.emit('animation_set_fps', { roomId: roomId, fps: fps });
+                }
+            });
+            animExportBtn.addEventListener('click', exportAnimation);
+
+            // --- Socket.IO Event Handlers ---
             
-            // Socket events
             socket.on('connect', function() {
                 playerId = socket.id;
                 statusBar.textContent = 'متصل بالخادم. اضغط على "البحث عن لاعب" للبدء.';
                 
-                // Authenticate if we have a session token
+                // Re-authenticate if we have a session token
                 if (sessionToken) {
                     socket.emit('authenticate', { token: sessionToken });
+                }
+                // If already in a room (e.g., reconnect), request sync
+                if (roomId) {
+                     socket.emit('animation_sync_request', { roomId });
                 }
             });
             
             socket.on('authenticated', function(data) {
-                // Update player name if provided
-                if (data.name) {
-                    playerName.textContent = 'لاعب';
+                // Update player name if provided by server on auth
+                if (data.name && currentUser) {
+                    currentUser.name = data.name;
+                    playerName.textContent = data.name;
                 }
             });
             
@@ -1689,28 +2262,25 @@
                 isConnected = true;
                 waitingScreen.style.display = 'none';
                 
-                // Update player name if provided
-                if (data.playerName) {
-                    playerName.textContent = 'لاعب';
-                }
+                // Update player name display
+                playerName.textContent = currentUser ? currentUser.name : 'لاعب';
                 
                 // Update opponent name if provided
-                if (data.opponentName) {
-                    currentOpponentName = data.opponentName;
-                    opponentName.textContent = currentOpponentName;
-                } else {
-                    opponentName.textContent = 'لاعب';
-                }
+                currentOpponentName = data.opponentName || 'لاعب';
+                opponentName.textContent = currentOpponentName;
                 
                 // Hide welcome screen, show drawing board
                 welcomeScreen.style.display = 'none';
-                drawingBoard.style.display = 'block';
+                drawingBoard.style.display = 'flex'; // Use flex for drawing board layout
                 
                 // Show toast notification
                 showToast('success', 'بدأت اللعبة', 'تم العثور على لاعب آخر وبدأت اللعبة');
                 
                 // Resize canvas after showing drawing board
                 setTimeout(resizeCanvas, 100);
+
+                // Default to drawing mode initially
+                switchToDrawingMode(); 
             });
             
             socket.on('player_left', function() {
@@ -1728,38 +2298,233 @@
                     opponentName.textContent = currentOpponentName;
                     
                     // Show toast notification
-                    showToast('info', 'تغيير الاسم', 'قام اللاعب الآخر بتغيير اسمه');
+                    showToast('info', 'تغيير الاسم', `قام اللاعب الآخر بتغيير اسمه إلى ${data.name}`);
                 }
             });
-            
+
+            // --- Drawing Event Sync --- 
+            // (Modify these to only apply to the correct frame in animation mode)
             socket.on('draw_start', function(data) {
-                // Another player started drawing
-                lastX = data.x;
-                lastY = data.y;
+                if (currentMode === 'animation' && data.frameIndex === currentFrameIndex) {
+                    // Opponent started drawing on the current frame
+                    lastX = data.x;
+                    lastY = data.y;
+                } else if (currentMode === 'drawing') {
+                    // Handle drawing mode sync
+                    lastX = data.x;
+                    lastY = data.y;
+                }
             });
             
             socket.on('draw_move', function(data) {
-                // Another player is drawing
-                drawLine(data.x0, data.y0, data.x1, data.y1, data.color, data.size, data.tool);
+                if (currentMode === 'animation' && data.frameIndex === currentFrameIndex) {
+                    // Opponent is drawing on the current frame
+                    drawLine(data.x0, data.y0, data.x1, data.y1, data.color, data.size, data.tool);
+                } else if (currentMode === 'drawing') {
+                    // Handle drawing mode sync
+                    drawLine(data.x0, data.y0, data.x1, data.y1, data.color, data.size, data.tool);
+                }
             });
-            
-            socket.on('draw_shape', function(data) {
-                // Another player drew a shape
-                if (data.type === 'circle') {
-                    drawCircle(data.x, data.y, data.radius, data.color, data.size);
-                } else if (data.type === 'rectangle') {
-                    drawRectangle(data.x, data.y, data.width, data.height, data.color, data.size);
-                } else if (data.type === 'line') {
-                    drawLine(data.x0, data.y0, data.x1, data.y1, data.color, data.size, 'brush');
+
+            socket.on('draw_end', function(data) {
+                if (currentMode === 'animation' && data.frameIndex === currentFrameIndex) {
+                    // Opponent finished drawing stroke on current frame
+                    // No visual change needed here, but might trigger save/update logic if needed
+                    // Since frame is saved on mouseup locally, maybe save opponent's frame too?
+                    // For now, rely on frame_update for full frame sync
+                } else if (currentMode === 'drawing') {
+                    // Handle drawing mode sync
                 }
             });
             
-            socket.on('clear_canvas', function() {
-                // Another player cleared the canvas
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                // Show toast notification
-                showToast('info', 'مسح اللوحة', 'قام اللاعب الآخر بمسح اللوحة');
+            socket.on('draw_shape', function(data) {
+                if (currentMode === 'animation' && data.frameIndex === currentFrameIndex) {
+                    // Opponent drew a shape on the current frame
+                    if (data.type === 'circle') {
+                        drawCircle(data.x, data.y, data.radius, data.color, data.size);
+                    } else if (data.type === 'rectangle') {
+                        drawRectangle(data.x, data.y, data.width, data.height, data.color, data.size);
+                    } else if (data.type === 'line') {
+                        drawLine(data.x0, data.y0, data.x1, data.y1, data.color, data.size, 'brush');
+                    }
+                    // Maybe trigger save/update logic here too?
+                } else if (currentMode === 'drawing') {
+                    // Handle drawing mode sync
+                    if (data.type === 'circle') {
+                        drawCircle(data.x, data.y, data.radius, data.color, data.size);
+                    } else if (data.type === 'rectangle') {
+                        drawRectangle(data.x, data.y, data.width, data.height, data.color, data.size);
+                    } else if (data.type === 'line') {
+                        drawLine(data.x0, data.y0, data.x1, data.y1, data.color, data.size, 'brush');
+                    }
+                }
+            });
+            
+            socket.on('clear_canvas', function(data) {
+                if (currentMode === 'animation' && data.frameIndex === currentFrameIndex) {
+                    // Opponent cleared the current frame
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    saveCurrentFrame(); // Save the cleared state
+                    showToast('info', 'مسح الإطار', `قام اللاعب الآخر بمسح الإطار ${currentFrameIndex + 1}`);
+                } else if (currentMode === 'drawing') {
+                    // Handle drawing mode sync
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    showToast('info', 'مسح اللوحة', 'قام اللاعب الآخر بمسح اللوحة');
+                }
+            });
+
+            // --- Animation Sync Event Handlers ---
+            socket.on('animation_init_response', function(data) {
+                if (data.animation) {
+                    animationFrames = data.animation.frames || [];
+                    currentFrameIndex = data.animation.currentFrame || 0;
+                    fps = data.animation.fps || 12;
+                    isPlaying = data.animation.isPlaying || false;
+                    animFpsInput.value = fps;
+                    
+                    // Ensure frames have IDs if missing (backward compatibility?)
+                    animationFrames.forEach(frame => {
+                        if (!frame.id) frame.id = `frame_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+                    });
+
+                    updateTimeline();
+                    setCurrentFrame(currentFrameIndex); // Load the correct frame
+                    if (isPlaying) {
+                        playAnimation(); // Start playback if server says it's playing
+                    } else {
+                        pauseAnimation();
+                    }
+                }
+            });
+
+            socket.on('frame_added', function(data) {
+                const { frame } = data;
+                if (!frame) return;
+
+                // Avoid adding if already exists (e.g., added locally)
+                if (animationFrames.some(f => f.id === frame.id)) return;
+
+                // Add frame at the correct index
+                animationFrames.splice(frame.index, 0, frame);
+                // Update indices
+                for (let i = frame.index + 1; i < animationFrames.length; i++) {
+                    animationFrames[i].index = i;
+                }
+                updateTimeline();
+                // If the added frame is the current one, load it
+                if (frame.index === currentFrameIndex) {
+                    loadFrame(currentFrameIndex);
+                }
+            });
+
+            socket.on('frame_updated', function(data) {
+                const { frameId, imageData } = data;
+                const frameIndex = animationFrames.findIndex(f => f.id === frameId);
+                if (frameIndex !== -1) {
+                    animationFrames[frameIndex].imageData = imageData;
+                    animationFrames[frameIndex].timestamp = Date.now(); // Update timestamp
+                    updateTimeline(); // Update thumbnail
+                    // If the updated frame is the current one, reload it
+                    if (frameIndex === currentFrameIndex) {
+                        loadFrame(currentFrameIndex);
+                    }
+                }
+            });
+
+            socket.on('frame_deleted', function(data) {
+                const { frameId } = data;
+                const frameIndex = animationFrames.findIndex(f => f.id === frameId);
+                if (frameIndex !== -1) {
+                    // Remove locally
+                    animationFrames.splice(frameIndex, 1);
+                    // Update indices
+                    for (let i = frameIndex; i < animationFrames.length; i++) {
+                        animationFrames[i].index = i;
+                    }
+                    // Adjust current frame index if necessary
+                    if (currentFrameIndex >= animationFrames.length) {
+                        currentFrameIndex = Math.max(0, animationFrames.length - 1);
+                    }
+                    setCurrentFrame(currentFrameIndex);
+                    updateTimeline();
+                }
+            });
+
+            socket.on('frame_reordered', function(data) {
+                const { frameId, newIndex } = data;
+                const oldIndex = animationFrames.findIndex(f => f.id === frameId);
+                if (oldIndex !== -1 && newIndex >= 0 && newIndex < animationFrames.length) {
+                    const frame = animationFrames.splice(oldIndex, 1)[0];
+                    animationFrames.splice(newIndex, 0, frame);
+                    // Update indices
+                    for (let i = 0; i < animationFrames.length; i++) {
+                        animationFrames[i].index = i;
+                    }
+                    updateTimeline();
+                    // If the current frame was moved, update the index but keep viewing it
+                    if (oldIndex === currentFrameIndex) {
+                         currentFrameIndex = newIndex;
+                         // No need to call setCurrentFrame as the content is the same
+                         // Just update the active state in the timeline
+                    } else if (currentFrameIndex > oldIndex && currentFrameIndex <= newIndex) {
+                         currentFrameIndex--; // Shift index down
+                    } else if (currentFrameIndex < oldIndex && currentFrameIndex >= newIndex) {
+                         currentFrameIndex++; // Shift index up
+                    }
+                    // Ensure active frame highlight is correct
+                    const activeThumb = timelineContainer.querySelector('.frame-thumbnail.active');
+                    if (activeThumb) activeThumb.classList.remove('active');
+                    const newActiveThumb = timelineContainer.querySelector(`.frame-thumbnail[data-index="${currentFrameIndex}"]`);
+                    if (newActiveThumb) newActiveThumb.classList.add('active');
+                }
+            });
+
+            socket.on('animation_state_update', function(data) {
+                // Update based on opponent's actions
+                if (data.currentFrame !== undefined && data.currentFrame !== currentFrameIndex) {
+                    setCurrentFrame(data.currentFrame);
+                }
+                if (data.isPlaying !== undefined && data.isPlaying !== isPlaying) {
+                    if (data.isPlaying) {
+                        playAnimation();
+                    } else {
+                        pauseAnimation();
+                    }
+                }
+            });
+
+            socket.on('animation_fps_update', function(data) {
+                if (data.fps !== undefined && data.fps !== fps) {
+                    fps = data.fps;
+                    animFpsInput.value = fps;
+                    if (isPlaying) { // Restart animation with new speed
+                        pauseAnimation();
+                        playAnimation();
+                    }
+                }
+            });
+
+            socket.on('animation_sync_response', function(data) {
+                // Full sync response (e.g., on join or request)
+                 if (data.animation) {
+                    animationFrames = data.animation.frames || [];
+                    currentFrameIndex = data.animation.currentFrame || 0;
+                    fps = data.animation.fps || 12;
+                    isPlaying = data.animation.isPlaying || false;
+                    animFpsInput.value = fps;
+                    
+                    animationFrames.forEach(frame => {
+                        if (!frame.id) frame.id = `frame_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+                    });
+
+                    updateTimeline();
+                    setCurrentFrame(currentFrameIndex);
+                    if (isPlaying) {
+                        playAnimation();
+                    } else {
+                        pauseAnimation();
+                    }
+                }
             });
             
             socket.on('disconnect', function() {
@@ -1769,6 +2534,10 @@
                 // Show toast notification
                 showToast('error', 'انقطع الاتصال', 'انقطع الاتصال بالخادم، يرجى تحديث الصفحة');
             });
+
+            // Initial setup
+            checkSession(); // Check for existing login session
+            resizeCanvas(); // Initial canvas sizing
         });
     </script>
 </body>
